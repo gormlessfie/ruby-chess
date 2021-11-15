@@ -6,10 +6,23 @@ class Board
   end
 
   def initialize_board
-    Array.new(8) { Array.new(8) }
+    board = Array.new(8) { Array.new(8) }
+
+    board[0] = [Rook.new, Knight.new, Bishop.new, Queen.new,
+                King.new, Bishop.new, Knight.new, Rook.new]
+    board[1] = [Pawn.new, Pawn.new, Pawn.new, Pawn.new,
+                Pawn.new, Pawn.new, Pawn.new, Pawn.new]
+
+    board[0] = [Rook.new, Knight.new, Bishop.new, Queen.new,
+                King.new, Bishop.new, Knight.new, Rook.new]
+    board[7] = [Rook.new, Knight.new, Bishop.new, Queen.new,
+                King.new, Bishop.new, Knight.new, Rook.new]
   end
 end
 
 b = Board.new
 
-p b.instance_variable_get(:@board)
+te = b.instance_variable_get(:@board)
+te.each do |row|
+  p row
+end
