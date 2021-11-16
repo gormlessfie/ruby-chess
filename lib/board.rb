@@ -8,6 +8,7 @@ require './lib/chess_pieces/knight'
 require './lib/chess_pieces/rook'
 require './lib/space'
 
+#
 class Board
   def initialize
     @board = setup_board
@@ -60,9 +61,3 @@ class Board
     board
   end
 end
-
-b = Board.new
-
-board = b.instance_variable_get(:@board)
-board[0].each {|space| puts space.inspect }
-
