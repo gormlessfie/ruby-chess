@@ -8,6 +8,7 @@ require './lib/chess_pieces/knight'
 require './lib/chess_pieces/rook'
 require './lib/space'
 
+# The chess board. This is an array which has 8 arrays of Space Objects.
 class Board
   def initialize
     @board = setup_board
@@ -66,3 +67,6 @@ b = Board.new
 board = b.instance_variable_get(:@board)
 board[0].each {|space| puts space.inspect }
 
+puts "\n"
+
+board[1].each { |space| puts space.inspect }

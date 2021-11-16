@@ -19,7 +19,7 @@ class Pawn
     black = "\u2659"
     white = "\u265F"
 
-    @color == 'white' ? white_pawn.encode('utf-8') : black_pawn.encode('utf-8')
+    @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
   end
 
   def display_icon
