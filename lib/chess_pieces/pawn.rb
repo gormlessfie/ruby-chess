@@ -21,7 +21,8 @@ class Pawn
 
     @color == 'white' ? white_pawn.encode('utf-8') : black_pawn.encode('utf-8')
   end
-end
 
-pe = Pawn.new('black')
-puts pe.instance_variable_get(:@icon)
+  def display_icon
+    @icon
+  end
+end

@@ -21,4 +21,8 @@ class Bishop
 
     @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
   end
+
+  def display_icon
+    @icon
+  end
 end
