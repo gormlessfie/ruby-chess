@@ -2,6 +2,7 @@
 
 class King
   def initialize(color)
+    @name = 'king'
     @color = color
     @current_pos = find_pos
     @possible_moves = update_possible_moves

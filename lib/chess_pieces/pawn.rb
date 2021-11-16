@@ -2,6 +2,7 @@
 
 class Pawn
   def initialize(color)
+    @name = 'pawn'
     @color = color
     @current_pos = find_pos
     @possible_moves = update_possible_moves

@@ -2,6 +2,7 @@
 
 class Queen
   def initialize(color)
+    @name = 'queen'
     @color = color
     @current_pos = find_pos
     @possible_moves = update_possible_moves

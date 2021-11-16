@@ -2,6 +2,7 @@
 
 class Knight
   def initialize(color)
+    @name = 'knight'
     @color = color
     @current_pos = find_pos
     @possible_moves = update_possible_moves
