@@ -60,4 +60,18 @@ class Board
 
     board
   end
+
+  public
+
+  def display_board
+    @board.each do |row|
+      print "      "
+      row.each do |space|
+        print "[#{space.piece.display_icon}]" unless space.piece.nil?
+
+        print '[ ]' if space.piece.nil?
+      end
+      puts "\n"
+    end
+  end
 end

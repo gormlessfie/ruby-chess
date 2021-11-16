@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require './lib/chess_pieces/chess_pieces'
-
 class Bishop
   def initialize(color)
     @name = 'bishop'

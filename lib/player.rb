@@ -4,4 +4,9 @@ class Player
   def initialize(color)
     @color = color
   end
+
+  def player_turn
+
+  end
+
 end
