@@ -61,15 +61,3 @@ class Board
     board
   end
 end
-<<<<<<< HEAD
-
-b = Board.new
-
-board = b.instance_variable_get(:@board)
-board[0].each {|space| puts space.inspect }
-
-puts "\n"
-
-board[1].each { |space| puts space.inspect }
-=======
->>>>>>> player
