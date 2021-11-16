@@ -8,7 +8,7 @@ require './lib/chess_pieces/knight'
 require './lib/chess_pieces/rook'
 require './lib/space'
 
-#
+# A chess board. This is an array of 8 arrays which contains Space objects.
 class Board
   def initialize
     @board = setup_board
