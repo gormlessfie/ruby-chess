@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class Knight
-  def initialize(color)
+  def initialize(color, index)
     @name = 'knight'
     @color = color
-    @current_pos = find_pos
+    @current_pos = index
     @possible_moves = update_possible_moves
     @icon = determine_icon
   end

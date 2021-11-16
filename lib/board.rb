@@ -41,21 +41,21 @@ class Board
   end
 
   def add_board_elites(row, color, board)
-    board[row][0].piece = Rook.new(color.to_s)
-    board[row][1].piece = Knight.new(color.to_s)
-    board[row][2].piece = Bishop.new(color.to_s)
-    board[row][3].piece = Queen.new(color.to_s)
-    board[row][4].piece = King.new(color.to_s)
-    board[row][5].piece = Bishop.new(color.to_s)
-    board[row][6].piece = Knight.new(color.to_s)
-    board[row][7].piece = Rook.new(color.to_s)
+    board[row][0].piece = Rook.new(color.to_s, [row, 0])
+    board[row][1].piece = Knight.new(color.to_s, [row, 1])
+    board[row][2].piece = Bishop.new(color.to_s, [row, 2])
+    board[row][3].piece = Queen.new(color.to_s, [row, 3])
+    board[row][4].piece = King.new(color.to_s, [row, 4])
+    board[row][5].piece = Bishop.new(color.to_s, [row, 5])
+    board[row][6].piece = Knight.new(color.to_s, [row, 6])
+    board[row][7].piece = Rook.new(color.to_s, [row, 7])
 
     board
   end
 
   def add_board_pawns(row, color, board)
-    board[row].each do |space|
-      space.piece = Pawn.new(color.to_s)
+    board[row].each_with_index do |space, sidx|
+      space.piece = Pawn.new(color.to_s, [row, sidx])
     end
 
     board

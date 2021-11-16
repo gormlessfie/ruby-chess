@@ -4,4 +4,5 @@ require './lib/game'
 
 game = Game.new
 
-game.game_start
+board = game.instance_variable_get(:@chess_board).instance_variable_get(:@board)
+p board[0]
