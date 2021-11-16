@@ -6,33 +6,34 @@ require './lib/chess_pieces/king'
 require './lib/chess_pieces/queen'
 require './lib/chess_pieces/knight'
 require './lib/chess_pieces/rook'
-
+require './lib/space'
 
 class Board
   def initialize
-    @board = initialize_board
+    @board = setup_board
   end
 
-  def initialize_board
-    board = Array.new(8) { Array.new(8) }
-
-    board[0] = [Rook.new('black'), Knight.new('black'), Bishop.new('black'),
-                Queen.new('black'), King.new('black'), Bishop.new('black'),
-                Knight.new('black'), Rook.new('black')]
-    board[1] = Array.new(8) { Pawn.new('black') }
-
-    board[6] = Array.new(7) { Pawn.new('white') }
-    board[7] = [Rook.new('white'), Knight.new('white'), Bishop.new('white'),
-                Queen.new('white'), King.new('white'), Bishop.new('white'),
-                Knight.new('white'), Rook.new('white')]
-
-    board
+  def setup_board
+    color_board(create_board)
   end
+
+  def create_board
+    Array.new(8) { Array.new(8) { Space.new } }
+  end
+
+  def color_board(board = @board)
+    board.each_with_index do |row, ridx|
+      row.each_with_index do |space, sidx|
+        space.make_color_black if ridx.even? && sidx.odd?
+        space.make_color_black if ridx.odd? && sidx.even?
+      end
+    end
+  end
+
 end
 
 b = Board.new
 
-te = b.instance_variable_get(:@board)
-te.each do |row|
-  puts row
-end
+board = b.instance_variable_get(:@board)
+board.each { |row| p row }
+

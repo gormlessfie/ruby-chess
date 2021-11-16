@@ -2,8 +2,14 @@
 
 # A square in the board.
 class Space
-  def initialize(color = white, piece = nil)
+  attr_accessor :present_piece
+
+  def initialize(color = 'white', piece = nil)
     @color = color
     @present_piece = piece
+  end
+
+  def make_color_black
+    @color = 'black'
   end
 end
