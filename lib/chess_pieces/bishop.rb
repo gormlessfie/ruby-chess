@@ -16,8 +16,8 @@ class Bishop
   end
 
   def determine_icon
-    white = "\u2657"
-    black = "\u265D"
+    black = "\u2657"
+    white = "\u265D"
 
     @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
   end

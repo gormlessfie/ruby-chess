@@ -16,8 +16,8 @@ class Pawn
   end
 
   def determine_icon
-    white_pawn = "\u2659"
-    black_pawn = "\u265F"
+    black = "\u2659"
+    white = "\u265F"
 
     @color == 'white' ? white_pawn.encode('utf-8') : black_pawn.encode('utf-8')
   end

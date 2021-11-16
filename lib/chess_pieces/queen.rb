@@ -16,8 +16,8 @@ class Queen
   end
 
   def determine_icon
-    white = "\u2655"
-    black = "\u265B"
+    black = "\u2655"
+    white = "\u265B"
 
     @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
   end

@@ -16,8 +16,8 @@ class King
   end
 
   def determine_icon
-    white = "\u2654"
-    black = "\u265A"
+    black = "\u2654"
+    white = "\u265A"
 
     @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
   end

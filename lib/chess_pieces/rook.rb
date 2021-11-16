@@ -16,8 +16,8 @@ class Rook
   end
 
   def determine_icon
-    white = "\u2656"
-    black = "\u265C"
+    black = "\u2656"
+    white = "\u265C"
 
     @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
   end
