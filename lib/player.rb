@@ -9,4 +9,15 @@ class Player
 
   end
 
+  def player_input
+    loop do
+      input = gets.chomp
+
+      return input if input.match(/\[\d, *\d\]/)
+    end
+  end
 end
+
+p = Player.new
+
+p.player_input

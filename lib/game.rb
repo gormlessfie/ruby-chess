@@ -10,11 +10,14 @@ class Game
     @chess_board = Board.new
     @white_player = Player.new('white')
     @black_player = Player.new('black')
+    @winner = nil
   end
 
   def game_round
-    @white_player.player_turn
-    @black_player.player_turn
+    while @winner.nil?
+      @white_player.player_turn
+      @black_player.player_turn
+    end
   end
 
   def game_start
