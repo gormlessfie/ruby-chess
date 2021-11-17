@@ -11,6 +11,7 @@ class Player
     # print all possible moves that the player can do.
     # get another player input (player, destination)
     # Move piece to designated space.
+    # update current_pos of the piece
     # Make origin space empty.
   end
 
