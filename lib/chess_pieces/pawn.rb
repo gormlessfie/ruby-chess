@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# A Pawn chess piece. This piece can advance forward 2 spaces on the first move
+# and 1 space afterwards. This piece can attack diagonally, if there is a
+# black piece 1 space diagonal from it in front.
 class Pawn
   def initialize(color, index)
     @name = 'pawn'
@@ -13,7 +16,7 @@ class Pawn
   end
 
   def update_possible_moves
-    @possibles_moves = create_possible_moves(@current_pos, @white_key, @black_key)
+    @possible_moves = create_possible_moves(@current_pos, @white_key, @black_key)
   end
 
   def create_possible_moves(current_position, white_key, black_key)
@@ -32,6 +35,10 @@ class Pawn
 
       [pos_row, pos_col]
     end
+  end
+
+  def update_current_pos(destination)
+    @current_pos = destination
   end
 
   def update_first_turn_false
@@ -62,4 +69,10 @@ end
 
 paw = Pawn.new('black', [1, 3])
 
+p paw.instance_variable_get(:@possible_moves)
+
+paw.instance_variable_set(:@current_pos, [2, 3])
+p paw.instance_variable_get(:@current_pos)
+paw.update_first_turn_false
+paw.update_possible_moves
 p paw.instance_variable_get(:@possible_moves)
