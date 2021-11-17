@@ -13,7 +13,7 @@ class Pawn
   end
 
   def update_possible_moves
-
+    @possibles_moves = create_possible_moves(@current_pos, @white_key, @black_key)
   end
 
   def create_possible_moves(current_position, white_key, black_key)
