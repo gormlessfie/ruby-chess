@@ -6,7 +6,12 @@ class Player
   end
 
   def player_turn
-
+    # pick a space. (piece to move)
+    # Generate possibles moves of that piece in that space
+    # print all possible moves that the player can do.
+    # get another player input (player, destination)
+    # Move piece to designated space.
+    # Make origin space empty.
   end
 
   def player_input
