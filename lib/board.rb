@@ -10,6 +10,8 @@ require './lib/space'
 
 # The chess board. This is an array which has 8 arrays of Space Objects.
 class Board
+  attr_accessor :board
+
   def initialize
     @board = setup_board
   end
@@ -62,10 +64,12 @@ class Board
   end
 
   public
-
+ 
   def display_board
-    @board.each do |row|
-      print "      "
+    print '         '
+    puts ' 0  1  2  3  4  5  6  7 '
+    @board.each_with_index do |row, ridx|
+      print "       #{ridx} "
       row.each do |space|
         print "[#{space.piece.display_icon}]" unless space.piece.nil?
 

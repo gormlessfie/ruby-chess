@@ -4,6 +4,8 @@
 # and 1 space afterwards. This piece can attack diagonally, if there is a
 # black piece 1 space diagonal from it in front.
 class Pawn
+  attr_reader :name, :color, :current_pos, :possible_moves
+
   def initialize(color, index)
     @name = 'pawn'
     @color = color
