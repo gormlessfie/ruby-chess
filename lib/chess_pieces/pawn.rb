@@ -66,13 +66,3 @@ class Pawn
     @icon
   end
 end
-
-paw = Pawn.new('black', [1, 3])
-
-p paw.instance_variable_get(:@possible_moves)
-
-paw.instance_variable_set(:@current_pos, [2, 3])
-p paw.instance_variable_get(:@current_pos)
-paw.update_first_turn_false
-paw.update_possible_moves
-p paw.instance_variable_get(:@possible_moves)

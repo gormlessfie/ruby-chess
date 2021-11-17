@@ -26,6 +26,6 @@ class Player
   end
 
   def input_message
-    puts "It is #{@color}'s turn. Please input a selection in '#,#' form."
+    puts "It is #{@color}'s turn. Please input a selection in '#,#' form for the piece that you wish to move."
   end
 end
