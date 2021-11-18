@@ -82,8 +82,6 @@ class Board
   def move_piece(initial_pos, dest_pos)
     chess_piece = @board[initial_pos[0]][initial_pos[1]].piece
     @board[dest_pos[0]][dest_pos[1]].piece = chess_piece
-
-    make_space_empty(initial_pos)
   end
 
   def make_space_empty(position)
