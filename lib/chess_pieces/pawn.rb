@@ -9,7 +9,9 @@ class Pawn < ChessPieces
   attr_reader :name, :color, :current_pos, :possible_moves, :first_turn
 
   def initialize(color, index)
-    super('pawn', color, index, [[-1, 0], [-2, 0]], [[1, 0], [2, 0]])
+    white_key = create_white_key
+    black_key = create_black_key
+    super('pawn', color, index, white_key, black_key)
     @first_turn = true
   end
 
@@ -17,6 +19,14 @@ class Pawn < ChessPieces
     @first_turn = false
     update_white_key
     update_black_key
+  end
+
+  def create_white_key
+    [[-1, 0], [-2, 0]]
+  end
+
+  def create_black_key
+    [[1, 0], [2, 0]]
   end
 
   def update_white_key
@@ -34,37 +44,3 @@ class Pawn < ChessPieces
     super(black, white)
   end
 end
-
-# def update_possible_moves
-#   @possible_moves = create_possible_moves(@current_pos, @white_key, @black_key)
-# end
-
-# def create_possible_moves(current_position, white_key, black_key)
-#   if @color.match('white')
-#     possible_moves_helper(white_key, current_position)
-#   else
-#     possible_moves_helper(black_key, current_position)
-#   end
-# end
-
-# def possible_moves_helper(key, current_position)
-#   key.map do |possible_move|
-#     pos_row = possible_move[0] + current_position[0]
-#     pos_col = possible_move[1] + current_position[1]
-#     next unless pos_row.between?(0, 7) && pos_col.between?(0, 7)
-
-#     [pos_row, pos_col]
-#   end
-# end
-
-# def update_current_pos(destination)
-#   @current_pos = destination
-# end
-
-# def determine_icon
-#   @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
-# end
-
-# def display_icon
-#   @icon
-# end

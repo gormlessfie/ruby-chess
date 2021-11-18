@@ -6,7 +6,9 @@ require './lib/chess_pieces/chess_pieces'
 # Can be blocked.
 class Queen < ChessPieces
   def initialize(color, index)
-    super('queen', color, index, [[-1, 0], [-2, 0]], [[1, 0], [2, 0]])
+    white_key = create_white_key
+    black_key = create_black_key
+    super('queen', color, index, white_key, black_key)
   end
 
   def determine_icon
@@ -14,5 +16,11 @@ class Queen < ChessPieces
     white = "\u265B"
 
     super(black, white)
+  end
+
+  def create_white_key
+  end
+
+  def create_black_key
   end
 end
