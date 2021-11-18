@@ -3,6 +3,7 @@
 require './lib/board'
 require './lib/player'
 require './lib/game_logic'
+require 'pry-byebug'
 
 # This holds all the methods that runs the game such as turns.
 class Game
@@ -16,68 +17,97 @@ class Game
   def game_round
     while @winner.nil?
       player_turn(@white_player)
-      @chess_board.display_board
-      player_turn(@black_player)
-      choose_winner(@white_player)
+      # player_turn(@black_player)
     end
   end
 
   def player_turn(player)
-    # pick a space. (piece to move)
-    chosen_piece = nil
-    loop do
-      chosen_coords = player.player_input('select')
+    # display board
+    print_board
 
-      # Generate possibles moves of that piece in that space
-      chosen_space = @chess_board.board[chosen_coords[0]][chosen_coords[1]]
-      if chosen_space.piece && chosen_space.piece.color == player.color
-        chosen_piece = chosen_space.piece
-        break
-      elsif chosen_space.piece.nil?
-        print '       '
-        puts "You have selected #{chosen_coords} which contains no chess piece."
-      else
-        print '       '
-        puts "You have selected #{chosen_coords} which is a piece not of your color."
-        print '       '
-        puts 'Please choose a piece of your color'
-      end
-    end
+    # pick a space. (piece to move)
+    chosen_piece = choose_space(player)
+    chosen_initial = chosen_piece.current_pos
 
     # Display which piece has been chosen
-    print '       '
-    puts "You have chosen #{chosen_piece.color} #{chosen_piece.name} at " \
-         "#{chosen_piece.current_pos}."
-
+    print_chosen_piece(chosen_piece)
     # display board
-    @chess_board.display_board
+    print_board
+
+    # Update possible moves after object collision detection.
+      # Check the board if any pieces are in possible move spaces
 
     # print all possible moves that the player can do.
-    print '       '
-    puts "Please choose from these possible moves: #{chosen_piece.possible_moves}"
+    print_possible_moves_piece(chosen_piece)
 
     # get another player input (player, destination)
-    loop do
-      chosen_destination = player.player_input('destination')
+    chosen_destination = choose_destination(player, chosen_piece)
 
-      break if chosen_piece.possible_moves.include?(chosen_destination)
+    # Move piece to designated space.
+    @chess_board.move_piece(chosen_initial, chosen_destination)
+    chosen_piece.update_first_turn_false if chosen_piece.name.match('pawn') && chosen_piece.first_turn
+
+    # Make origin space empty.
+    @chess_board.make_space_empty(chosen_initial)
+
+    # update current_pos of the piece
+    chosen_piece.update_current_pos(chosen_destination)
+    # update possible moves of the piece
+    chosen_piece.update_possible_moves
+  end
+
+  def choose_space(player)
+    loop do
+      chosen_initial = player.player_input('select')
+
+      chosen_space = @chess_board.board[chosen_initial[0]][chosen_initial[1]]
+      return chosen_space.piece if chosen_space.piece &&
+                                   chosen_space.piece.color == player.color
+
+      error_message_invalid_space(chosen_space)
+    end
+  end
+
+  def choose_destination(player, chosen_piece)
+    loop do
+      destination = player.player_input('destination')
+
+      return destination if chosen_piece.possible_moves.include?(destination)
 
       # check if input is within possible moves for that piece
       print '       '
-      puts "#{chosen_destination} is not a possible move."
+      puts "#{destination} is not a possible move."
     end
-    # Move piece to designated space.
+  end
 
-    # update current_pos of the piece
+  def print_chosen_piece(piece)
+    print '       '
+    puts "You have chosen a #{piece.color} #{piece.name} at " \
+         "#{piece.current_pos}."
+  end
 
-    # update possible moves of the piece
+  def print_possible_moves_piece(piece)
+    print '       '
+    puts "Please choose from these possible moves: #{piece.possible_moves}"
+  end
 
-    # Make origin space empty.
+  def print_board
+    @chess_board.display_board
+  end
+
+  def error_message_invalid_space(space)
+    print '       '
+    if space.piece.nil?
+      puts "You have selected #{chosen_initial} which contains no chess piece."
+    else
+      puts "You have selected #{chosen_initial} which is a piece not of your color."
+      print '       '
+      puts 'Please choose a piece of your color'
+    end
   end
 
   def game_start
     intro_message
-    @chess_board.display_board
     game_round
     game_end_message(@winner)
   end
@@ -103,7 +133,7 @@ class Game
 
   def game_end_message(winner)
     puts %(
-      #{winner.color} has won!
+       #{winner.color.upcase} has won!
     )
   end
 end
