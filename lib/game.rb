@@ -74,6 +74,8 @@ class Game
   def move_piece_complete(piece, initial, destination)
     # Move piece to designated space.
     @chess_board.move_piece(initial, destination)
+
+    # update pawn first turn if moved
     piece.update_first_turn_false if piece.name.match('pawn') &&
                                      piece.first_turn
 
@@ -82,6 +84,7 @@ class Game
 
     # update current_pos of the piece
     piece.update_current_pos(destination)
+
     # update possible moves of the piece
     piece.update_possible_moves
   end
