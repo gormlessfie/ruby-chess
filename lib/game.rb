@@ -12,12 +12,14 @@ class Game
     @white_player = Player.new('white')
     @black_player = Player.new('black')
     @winner = nil
+    @turn_counter = 0
   end
 
   def game_round
     while @winner.nil?
       player_turn(@white_player)
-      # player_turn(@black_player)
+      player_turn(@black_player)
+      increment_turn_counter
     end
   end
 
@@ -131,6 +133,10 @@ class Game
     intro_message
     game_round
     game_end_message(@winner)
+  end
+
+  def increment_turn_counter
+    @turn_counter += 1
   end
 
   def choose_winner(player)
