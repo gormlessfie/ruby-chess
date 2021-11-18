@@ -15,6 +15,7 @@ class Player
       puts "\n"
       return input.split(',').map(&:to_i) if input.match(/\d,\d/)
 
+      print '       '
       puts "The input #{input} is invalid. It must be '#y,#x'"
       puts "\n"
     end

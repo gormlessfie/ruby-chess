@@ -29,6 +29,9 @@ class Game
     chosen_piece = choose_space(player)
     chosen_initial = chosen_piece.current_pos
 
+    # clear
+    clear_console
+
     # Display which piece has been chosen
     print_chosen_piece(chosen_piece)
     # display board
@@ -43,6 +46,9 @@ class Game
     # get another player input (player, destination)
     chosen_destination = choose_destination(player, chosen_piece)
 
+    # clear
+    clear_console
+
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(chosen_piece, chosen_initial, chosen_destination)
   end
@@ -55,7 +61,7 @@ class Game
       return chosen_space.piece if chosen_space.piece &&
                                    chosen_space.piece.color == player.color
 
-      error_message_invalid_space(chosen_space)
+      error_message_invalid_space(chosen_space, chosen_initial)
     end
   end
 
@@ -104,18 +110,24 @@ class Game
     @chess_board.display_board
   end
 
-  def error_message_invalid_space(space)
+  def error_message_invalid_space(space, position)
     print '       '
     if space.piece.nil?
-      puts "You have selected #{chosen_initial} which contains no chess piece."
+      puts "You have selected #{position} which contains no chess piece."
     else
-      puts "You have selected #{chosen_initial} which is a piece not of your color."
+      puts "You have selected #{position} which is a piece not of your color."
       print '       '
       puts 'Please choose a piece of your color'
     end
   end
 
+  def clear_console
+    system('clear')
+    puts "\n\n\n"
+  end
+
   def game_start
+    clear_console
     intro_message
     game_round
     game_end_message(@winner)
