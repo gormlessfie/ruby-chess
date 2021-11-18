@@ -35,7 +35,7 @@ class Game
     print_board
 
     # Update possible moves after object collision detection.
-      # Check the board if any pieces are in possible move spaces
+    # Check the board if any pieces are in possible move spaces
 
     # print all possible moves that the player can do.
     print_possible_moves_piece(chosen_piece)
