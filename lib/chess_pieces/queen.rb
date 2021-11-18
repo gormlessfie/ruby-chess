@@ -1,28 +1,18 @@
 # frozen_string_literal: true
 
-class Queen
+require './lib/chess_pieces/chess_pieces'
+
+# A queen chess piece. The queen can move like rook and bishop combined, no limit.
+# Can be blocked.
+class Queen < ChessPieces
   def initialize(color, index)
-    @name = 'queen'
-    @color = color
-    @current_pos = index
-    @possible_moves = update_possible_moves
-    @icon = determine_icon
-  end
-
-  def find_pos
-  end
-
-  def update_possible_moves
+    super('queen', color, index, [[-1, 0], [-2, 0]], [[1, 0], [2, 0]])
   end
 
   def determine_icon
     black = "\u2655"
     white = "\u265B"
 
-    @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
-  end
-
-  def display_icon
-    @icon
+    super(black, white)
   end
 end

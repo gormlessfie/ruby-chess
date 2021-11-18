@@ -1,28 +1,17 @@
 # frozen_string_literal: true
 
-class Rook
+require './lib/chess_pieces/chess_pieces'
+
+# A rook chess piece. Moves vertically or horizontally, no limit. Can be blocked. 
+class Rook < ChessPieces
   def initialize(color, index)
-    @name = 'rook'
-    @color = color
-    @current_pos = index
-    @possible_moves = update_possible_moves
-    @icon = determine_icon
-  end
-
-  def find_pos
-  end
-
-  def update_possible_moves
+    super('rook', color, index, [[-1, 0], [-2, 0]], [[1, 0], [2, 0]])
   end
 
   def determine_icon
     black = "\u2656"
     white = "\u265C"
 
-    @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
-  end
-
-  def display_icon
-    @icon
+    super(black, white)
   end
 end

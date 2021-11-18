@@ -1,28 +1,18 @@
 # frozen_string_literal: true
 
-class Knight
+require './lib/chess_pieces/chess_pieces'
+
+# A knight chess piece. Moves in L's. Can leap over units. Cannot be blocked.
+class Knight < ChessPieces
   def initialize(color, index)
-    @name = 'knight'
-    @color = color
-    @current_pos = index
-    @possible_moves = update_possible_moves
+    super('knight', color, index, [[-1, 0], [-2, 0]], [[1, 0], [2, 0]])
     @icon = determine_icon
-  end
-
-  def find_pos
-  end
-
-  def update_possible_moves
   end
 
   def determine_icon
     black = "\u2658"
     white = "\u265E"
 
-    @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
-  end
-
-  def display_icon
-    @icon
+    super(black, white)
   end
 end

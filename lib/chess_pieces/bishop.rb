@@ -1,28 +1,17 @@
 # frozen_string_literal: true
 
-class Bishop
+require './lib/chess_pieces/chess_pieces'
+
+# A bishop chess piece. Moves diagonally, no limit. Can be blocked.
+class Bishop < ChessPieces
   def initialize(color, index)
-    @name = 'bishop'
-    @color = color
-    @current_pos = index
-    @possible_moves = update_possible_moves
-    @icon = determine_icon
-  end
-
-  def find_pos
-  end
-
-  def update_possible_moves
+    super('bishop', color, index, [[-1, 0], [-2, 0]], [[1, 0], [2, 0]])
   end
 
   def determine_icon
     black = "\u2657"
     white = "\u265D"
 
-    @color == 'white' ? white.encode('utf-8') : black.encode('utf-8')
-  end
-
-  def display_icon
-    @icon
+    super(black, white)
   end
 end
