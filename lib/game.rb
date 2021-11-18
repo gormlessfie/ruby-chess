@@ -43,17 +43,8 @@ class Game
     # get another player input (player, destination)
     chosen_destination = choose_destination(player, chosen_piece)
 
-    # Move piece to designated space.
-    @chess_board.move_piece(chosen_initial, chosen_destination)
-    chosen_piece.update_first_turn_false if chosen_piece.name.match('pawn') && chosen_piece.first_turn
-
-    # Make origin space empty.
-    @chess_board.make_space_empty(chosen_initial)
-
-    # update current_pos of the piece
-    chosen_piece.update_current_pos(chosen_destination)
-    # update possible moves of the piece
-    chosen_piece.update_possible_moves
+    # move piece, update old spot, update current pos, update new moves
+    move_piece_complete(chosen_piece, chosen_initial, chosen_destination)
   end
 
   def choose_space(player)
@@ -78,6 +69,21 @@ class Game
       print '       '
       puts "#{destination} is not a possible move."
     end
+  end
+
+  def move_piece_complete(piece, initial, destination)
+    # Move piece to designated space.
+    @chess_board.move_piece(initial, destination)
+    piece.update_first_turn_false if piece.name.match('pawn') &&
+                                     piece.first_turn
+
+    # Make origin space empty.
+    @chess_board.make_space_empty(initial)
+
+    # update current_pos of the piece
+    piece.update_current_pos(destination)
+    # update possible moves of the piece
+    piece.update_possible_moves
   end
 
   def print_chosen_piece(piece)
