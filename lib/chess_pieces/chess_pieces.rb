@@ -37,14 +37,6 @@ class ChessPieces
     end
   end
 
-  def create_white_key
-
-  end
-
-  def create_black_key
-    
-  end
-
   def update_current_pos(destination)
     @current_pos = destination
   end

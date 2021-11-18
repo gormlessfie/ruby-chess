@@ -40,7 +40,6 @@ class Pawn < ChessPieces
   def determine_icon
     black = "\u2659"
     white = "\u265F"
-
     super(black, white)
   end
 end

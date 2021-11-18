@@ -6,21 +6,28 @@ require './lib/chess_pieces/chess_pieces'
 # Can be blocked.
 class King < ChessPieces
   def initialize(color, index)
-    white_key = create_white_key
-    black_key = create_black_key
+    white_key = create_key
+    black_key = create_key
     super('king', color, index, white_key, black_key)
+  end
+
+  def create_key
+    [[-1, -1], [-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1]]
   end
 
   def determine_icon
     black = "\u2654"
     white = "\u265A"
-
     super(black, white)
   end
 
-  def create_white_key
-  end
+  def possible_moves_helper(key, current_position)
+    key.map do |possible_move|
+      pos_row = possible_move[0] + current_position[0]
+      pos_col = possible_move[1] + current_position[1]
+      next unless pos_row.between?(0, 7) && pos_col.between?(0, 7)
 
-  def create_black_key
+      [pos_row, pos_col]
+    end
   end
 end
