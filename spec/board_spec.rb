@@ -43,4 +43,23 @@ describe Board do
       end
     end
   end
+
+  context '#move_piece' do
+    subject(:board) { described_class.new }
+
+    it 'move pawn at [1, 1] to [2, 1]' do
+      chess_board = board.board
+
+      expect { board.move_piece([1, 1], [2, 1]) }
+        .to change { chess_board[2][1].piece }
+        .from(nil).to(chess_board[1][1].piece)
+    end
+
+    it 'space at [1, 1] is now nil' do
+      chess_board = board.board
+
+      expect { board.move_piece([1, 1], [2, 1]) }
+        .to change { chess_board[1][1].piece }.to(nil)
+    end
+  end
 end
