@@ -3,6 +3,7 @@
 require './lib/board'
 require './lib/player'
 require './lib/game_logic'
+require './lib/unit_collision'
 require 'pry-byebug'
 
 # This holds all the methods that runs the game such as turns.
@@ -41,6 +42,16 @@ class Game
 
     # Update possible moves after object collision detection.
     # Check the board if any pieces are in possible move spaces
+
+    # Create UnitCollision object
+    collision = UnitCollision.new(@board)
+
+    # Check board for any pieces in possible move spaces
+
+    #  if same color piece, remove possible move space\
+
+    # if different color, look at  piece pos, remove all pos move spaces further
+    # than diff color piece pos.
 
     # print all possible moves that the player can do.
     print_possible_moves_piece(chosen_piece)
