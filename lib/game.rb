@@ -44,11 +44,12 @@ class Game
     # Check the board if any pieces are in possible move spaces
 
     # Create UnitCollision object
-    #collision = UnitCollision.new(@chess_board)
+    collision = UnitCollision.new(@chess_board)
 
     # Check board for any pieces in possible move spaces
-    #p collision.provide_problem_spaces_same_color(chosen_piece)
-    #  if same color piece, remove possible move space\
+    blocking_pieces = collision.provide_problem_spaces_same_color(chosen_piece)
+
+    # remove the array where array[0] is in block_pieces
 
     # if different color, look at  piece pos, remove all pos move spaces further
     # than diff color piece pos.
@@ -82,7 +83,7 @@ class Game
     loop do
       destination = player.player_input('destination')
 
-      return destination if chosen_piece.possible_moves.include?(destination)
+      return destination if chosen_piece.possible_moves.flatten(1).include?(destination)
 
       # check if input is within possible moves for that piece
       print '       '
