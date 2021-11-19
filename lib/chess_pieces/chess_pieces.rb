@@ -19,8 +19,7 @@ class ChessPieces
     @possible_moves = create_possible_moves(@current_pos, @white_key, @black_key)
   end
 
-  def update_possible_moves_unit_collision
-    @possible_moves = 
+  def remove_possible_spaces_where_piece_same_color
   end
 
   def create_possible_moves(current_position, white_key, black_key)
