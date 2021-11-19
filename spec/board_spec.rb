@@ -55,10 +55,21 @@ describe Board do
         .from(nil).to(chess_board[1][1].piece)
     end
 
-    it 'space at [1, 1] is now nil' do
+    it 'space at [1, 1] still has piece' do
       chess_board = board.board
 
       expect { board.move_piece([1, 1], [2, 1]) }
+        .not_to change { chess_board[1][1].piece }
+    end
+  end
+
+  context '#make_space_empty' do
+    subject(:board) { described_class.new }
+
+    it 'Make [1, 1] empty' do
+      chess_board = board.board
+
+      expect { board.make_space_empty([1, 1]) }
         .to change { chess_board[1][1].piece }.to(nil)
     end
   end
