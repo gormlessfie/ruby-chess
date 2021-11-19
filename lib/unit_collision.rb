@@ -14,7 +14,9 @@ class UnitCollision
     problem_spaces = []
     possible_move_list = moving_piece.possible_moves
 
-    possible_move_list.each do |possible_space|
+    possible_move_list.each do |list_possible_space|
+      possible_space = list_possible_space[0]
+
       next unless piece_in_space_exist?(possible_space)
 
       pot_piece = @collision_board.board[possible_space[0]][possible_space[1]].piece

@@ -48,8 +48,9 @@ class Game
 
     # Check board for any pieces in possible move spaces
     blocking_pieces = collision.provide_problem_spaces_same_color(chosen_piece)
-
+    p "blocking spaces #{blocking_pieces}"
     # remove the array where array[0] is in block_pieces
+    chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
 
     # if different color, look at  piece pos, remove all pos move spaces further
     # than diff color piece pos.

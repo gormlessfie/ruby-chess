@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pry-byebug'
+
 # Parent class of the chess pieces. This has all the methods needed to generate
 # possible moves for each piece.
 class ChessPieces
@@ -26,6 +28,12 @@ class ChessPieces
 
   def remove_possible_spaces_where_conflict(list)
     # This removes the possible_moves where the piece can't go because of blocking.
+    # List contains closest space to the chosen_piece that is blocked.
+    list.each do |blocking_space|
+      @possible_moves.each do |list_of_spaces| 
+        @possible_moves.delete(list_of_spaces) if blocking_space == list_of_spaces[0]
+      end
+    end
   end
 
   def create_possible_moves(current_position, white_key, black_key)
