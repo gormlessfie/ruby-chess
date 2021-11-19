@@ -21,9 +21,9 @@ class ChessPieces
 
   def create_possible_moves(current_position, white_key, black_key)
     if @color.match('white')
-      possible_moves_helper(white_key, current_position)
+      possible_moves_helper(white_key, current_position).compact
     else
-      possible_moves_helper(black_key, current_position)
+      possible_moves_helper(black_key, current_position).compact
     end
   end
 

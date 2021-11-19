@@ -25,7 +25,6 @@ class Rook < ChessPieces
     complete_list = []
     row = current_position[0]
     col = current_position[1]
-
     key.each do |index|
       complete_list.concat(multiple_spaces_helper(index, [row, col]))
     end
@@ -34,17 +33,13 @@ class Rook < ChessPieces
 
   def multiple_spaces_helper(key, cur_pos)
     possible_moves_list = []
-
     while cur_pos[0].between?(0, 7) && cur_pos[1].between?(0, 7)
       cur_pos[0] -= key[0]
       cur_pos[1] -= key[1]
-
       return possible_moves_list unless cur_pos[0].between?(0, 7) &&
                                         cur_pos[1].between?(0, 7)
 
       possible_moves_list.push([cur_pos[0], cur_pos[1]])
     end
-
-    possible_moves_list
   end
 end
