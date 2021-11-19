@@ -5,20 +5,27 @@ class UnitCollision
   def initialize(board)
     @collision_board = board
   end
-  
-  def provide_problem_spaces_same_color
+
+  # This will check if there are any pieces of the same color on a possible move
+  # space of the chosen piece that is going to be moved.
+  # This returns an array of the spaces that have the issue.
+  # possible_move_list is an array of indexs. i.e [3, 3]
+  def provide_problem_spaces_same_color(moving_piece)
+    problem_spaces = []
+    possible_move_list = moving_piece.possible_moves
+
+    possible_move_list.each do |possible_space|
+      next unless piece_in_space_exist?(possible_space)
+
+      pot_piece = @collision_board.board[possible_space[0]][possible_space[1]].piece
+      problem_spaces.push(possible_space) if pieces_same_color?(moving_piece, pot_piece)
+    end
+
+    problem_spaces
   end
 
   def piece_in_space_exist?(index)
-    return true unless @collision_board[index[0]][index[1]].piece.nil?
-
-    false
-  end
-
-  def piece_in_space_same_color?(chosen_piece, index)
-    index_piece = @collision_board[chosen_piece[0]][chosen_piece[1]]
-    possible_piece = @collision_board[index[0]][index[1]]
-    return true if pieces_same_color?(index_piece, possible_piece)
+    return true unless @collision_board.board[index[0]][index[1]].piece.nil?
 
     false
   end
@@ -27,3 +34,4 @@ class UnitCollision
     piece_one.color == piece_two.color
   end
 end
+

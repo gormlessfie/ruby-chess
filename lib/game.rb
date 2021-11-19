@@ -44,10 +44,10 @@ class Game
     # Check the board if any pieces are in possible move spaces
 
     # Create UnitCollision object
-    collision = UnitCollision.new(@board)
+    #collision = UnitCollision.new(@chess_board)
 
     # Check board for any pieces in possible move spaces
-
+    #p collision.provide_problem_spaces_same_color(chosen_piece)
     #  if same color piece, remove possible move space\
 
     # if different color, look at  piece pos, remove all pos move spaces further
