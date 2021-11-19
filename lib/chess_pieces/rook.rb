@@ -26,7 +26,8 @@ class Rook < ChessPieces
     row = current_position[0]
     col = current_position[1]
     key.each do |index|
-      complete_list.concat(multiple_spaces_helper(index, [row, col]))
+      list = multiple_spaces_helper(index, [row, col])
+      complete_list.push(list) unless list.empty?
     end
     complete_list
   end

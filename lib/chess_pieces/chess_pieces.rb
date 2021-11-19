@@ -19,7 +19,13 @@ class ChessPieces
     @possible_moves = create_possible_moves(@current_pos, @white_key, @black_key)
   end
 
-  def remove_possible_spaces_where_piece_same_color
+  def create_key
+    # The key is in the order: top-left, top, top-right, right, bottom-right
+    # bottom, bottom-left, middle-left
+  end
+
+  def remove_possible_spaces_where_conflict(list)
+    # This removes the possible_moves where the piece can't go because of blocking.
   end
 
   def create_possible_moves(current_position, white_key, black_key)
@@ -36,7 +42,7 @@ class ChessPieces
       pos_col = possible_move[1] + current_position[1]
       next unless pos_row.between?(0, 7) && pos_col.between?(0, 7)
 
-      [pos_row, pos_col]
+      [[pos_row, pos_col]]
     end
   end
 
