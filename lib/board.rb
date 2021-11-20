@@ -65,6 +65,16 @@ class Board
 
   public
 
+  def get_list_of_pieces(color)
+    list = []
+    @board.each do |row|
+      row.each do |space|
+        list.push(space.piece) if space&.piece&.color == color
+      end
+    end
+    list
+  end
+
   def display_board
     print '         '
     puts ' 0  1  2  3  4  5  6  7 '
