@@ -19,7 +19,7 @@ class Game
   def game_round
     while @winner.nil?
       player_turn(@white_player)
-      player_turn(@black_player)
+      # player_turn(@black_player)
       increment_turn_counter
     end
   end
@@ -28,8 +28,8 @@ class Game
     # display board
     print_board
 
-    # pick a space. (piece to move)
-    chosen_piece = choose_space(player)
+    # pick a piece to move.
+    chosen_piece = setup_piece(player)
     chosen_initial = chosen_piece.current_pos
 
     # clear
@@ -39,21 +39,6 @@ class Game
     print_chosen_piece(chosen_piece)
     # display board
     print_board
-
-    # Update possible moves after object collision detection.
-    # Check the board if any pieces are in possible move spaces
-
-    # Create UnitCollision object
-    collision = UnitCollision.new(@chess_board)
-
-    # Provide a list of any blocking pieces for the chosen_piece.
-    blocking_pieces = collision.provide_problem_spaces_same_color(chosen_piece)
-    p blocking_pieces
-    # remove the array where array[0] is in block_pieces
-    chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
-
-    # if different color, look at  piece pos, remove all pos move spaces further
-    # than diff color piece pos.
 
     # print all possible moves that the player can do.
     print_possible_moves_piece(chosen_piece)
@@ -68,16 +53,32 @@ class Game
     move_piece_complete(chosen_piece, chosen_initial, chosen_destination)
   end
 
-  def choose_space(player)
+  def setup_piece(player)
     loop do
       chosen_initial = player.player_input('select')
-
       chosen_space = @chess_board.board[chosen_initial[0]][chosen_initial[1]]
+
+      # Update the possible_moves that the piece can move to in its current pos.
+      update_piece_with_object_collision(chosen_space.piece)
+
       return chosen_space.piece if chosen_space.piece &&
-                                   chosen_space.piece.color == player.color
+                                   chosen_space.piece.color == player.color &&
+                                   !chosen_space.piece.possible_moves.empty?
 
       error_message_invalid_space(chosen_space, chosen_initial)
     end
+  end
+
+  def update_piece_with_object_collision(chosen_piece)
+    # Create UnitCollision object
+    collision = UnitCollision.new(@chess_board)
+
+    # Provide a list of any blocking pieces for the chosen_piece.
+    blocking_pieces = collision.provide_problem_spaces_same_color(chosen_piece)
+    p blocking_pieces
+
+    # Remove all spaces at and beyond the blocking piece.
+    chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
   end
 
   def choose_destination(player, chosen_piece)
@@ -129,6 +130,9 @@ class Game
     print '       '
     if space.piece.nil?
       puts "You have selected #{position} which contains no chess piece."
+    elsif space.piece.possible_moves.empty?
+      puts "There are no possible spaces for this #{space.piece.color} " \
+           "#{space.piece.name} to move to."
     else
       puts "You have selected #{position} which is a piece not of your color."
       print '       '
