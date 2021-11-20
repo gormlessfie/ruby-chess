@@ -24,7 +24,6 @@ class UnitCollision
         break
       end
     end
-    p problem_spaces
     problem_spaces
   end
 
@@ -39,21 +38,14 @@ class UnitCollision
         next unless piece_in_space_exist?(next_space)
 
         pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
-          if piece_pawn?(moving_piece)
-            l_space = calc_pawn_attack(moving_piece, 0)
-            r_space = calc_pawn_attack(moving_piece, 1)
 
-            l_piece = nil
-            r_piece = nil
+        if piece_pawn?(moving_piece)
+          pawn_attack_helper(direction_list, moving_piece, 0)
+          pawn_attack_helper(direction_list, moving_piece, 1)
+        elsif pieces_different_color?(moving_piece, pot_piece)
+          direction_list.push(next_space)
+        end
 
-            l_piece = @collision_board.board[l_space.flatten(1)[0]][l_space.flatten(1)[1]].piece unless l_space.nil?
-            r_piece = @collision_board.board[r_space.flatten(1)[0]][r_space.flatten(1)[1]].piece unless r_space.nil?
-
-            direction_list.push(l_space) if pieces_different_color?(moving_piece, l_piece) && !l_space.nil?
-            direction_list.push(r_space) if pieces_different_color?(moving_piece, r_piece) && !r_space.nil?
-          elsif pieces_different_color?(moving_piece, pot_piece)
-            direction_list.push(next_space)
-          end
         break
       end
       attack_spaces.push(direction_list)
@@ -74,9 +66,13 @@ class UnitCollision
     return [space_pos] if pieces_different_color?(moving_piece, pot_piece)
   end
 
-  def pawn_attack_helper(moving_piece, dir_space, dir_piece = nil)
-    dir_piece = @collision_board.board[l_space.flatten(1)[0]][l_space.flatten(1)[1]].piece unless dir_space.nil?
-    return dir_space if pieces_different_color?(moving_piece, dir_piece) && !dir_space.nil?
+  def pawn_attack_helper(dir_list, moving_piece, direction, attacked_piece = nil)
+    attack_space = calc_pawn_attack(moving_piece, direction)
+    attack_space = attack_space.flatten(1) unless attack_space.nil?
+
+    attacked_piece = @collision_board.board[attack_space[0]][attack_space[1]].piece unless attack_space.nil?
+
+    dir_list.push([attack_space]) if pieces_different_color?(moving_piece, attacked_piece) && !attack_space.nil?
   end
 
   def det_pawn_att_key(moving_piece)
