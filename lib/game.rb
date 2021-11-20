@@ -46,9 +46,9 @@ class Game
     # Create UnitCollision object
     collision = UnitCollision.new(@chess_board)
 
-    # Check board for any pieces in possible move spaces
+    # Provide a list of any blocking pieces for the chosen_piece.
     blocking_pieces = collision.provide_problem_spaces_same_color(chosen_piece)
-    p "blocking spaces #{blocking_pieces}"
+    p blocking_pieces
     # remove the array where array[0] is in block_pieces
     chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
 

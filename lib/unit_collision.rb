@@ -15,14 +15,17 @@ class UnitCollision
     possible_move_list = moving_piece.possible_moves
 
     possible_move_list.each do |list_possible_space|
-      possible_space = list_possible_space[0]
+      list_possible_space.each do |next_space|
+        next unless piece_in_space_exist?(next_space)
 
-      next unless piece_in_space_exist?(possible_space)
+        pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
 
-      pot_piece = @collision_board.board[possible_space[0]][possible_space[1]].piece
-      problem_spaces.push(possible_space) if pieces_same_color?(moving_piece, pot_piece)
+        break if pieces_different_color?(moving_piece, pot_piece)
+
+        problem_spaces.push(next_space)
+        break
+      end
     end
-
     problem_spaces
   end
 
@@ -32,8 +35,8 @@ class UnitCollision
     false
   end
 
-  def pieces_same_color?(piece_one, piece_two)
-    piece_one.color == piece_two.color
+  def pieces_different_color?(piece_one, piece_two)
+    piece_one.color != piece_two.color
   end
 end
 
