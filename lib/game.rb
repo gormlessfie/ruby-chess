@@ -65,11 +65,7 @@ class Game
                                    !chosen_space.piece.possible_moves.empty?
 
       error_message_invalid_space(chosen_space, chosen_initial)
-
-      unless chosen_space.piece.nil?
-        chosen_space.piece.update_possible_moves
-        update_piece_with_object_collision(chosen_space.piece) if chosen_space.piece
-      end
+      chosen_space&.piece&.update_possible_moves
     end
   end
 
@@ -112,8 +108,9 @@ class Game
     # update current_pos of the piece
     piece.update_current_pos(destination)
 
-    # update possible moves of the piece
+    # update possible moves of the piece and add object collision.
     piece.update_possible_moves
+    update_piece_with_object_collision(piece) if piece
   end
 
   def update_piece_first_turn(piece)
