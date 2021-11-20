@@ -39,6 +39,17 @@ class ChessPieces
         end
       end
     end
+  end
+
+  def add_possible_attack_spaces(list)
+    # The list should be an array of nested arrays that may be empty.
+    # i.e. [[], [], [[1, 3]], []]
+    list.each_with_index do |attack_space, idx|
+      @possible_moves[idx].push(attack_space.flatten(1)) unless attack_space.empty?
+    end
+  end
+
+  def remove_empty_direction_possible_moves
     @possible_moves.delete_if(&:empty?)
   end
 

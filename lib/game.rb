@@ -33,7 +33,7 @@ class Game
     chosen_initial = chosen_piece.current_pos
 
     # clear
-    clear_console
+    # clear_console
 
     # Display which piece has been chosen
     print_chosen_piece(chosen_piece)
@@ -47,7 +47,7 @@ class Game
     chosen_destination = choose_destination(player, chosen_piece)
 
     # clear
-    clear_console
+    # clear_console
 
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(chosen_piece, chosen_initial, chosen_destination)
@@ -59,13 +59,14 @@ class Game
       chosen_space = @chess_board.board[chosen_initial[0]][chosen_initial[1]]
 
       # Update the possible_moves that the piece can move to in its current pos.
-      update_piece_with_object_collision(chosen_space.piece)
+      update_piece_with_object_collision(chosen_space.piece) if chosen_space.piece
 
       return chosen_space.piece if chosen_space.piece &&
                                    chosen_space.piece.color == player.color &&
                                    !chosen_space.piece.possible_moves.empty?
 
       error_message_invalid_space(chosen_space, chosen_initial)
+      chosen_space.piece.update_possible_moves
     end
   end
 
@@ -75,10 +76,14 @@ class Game
 
     # Provide a list of any blocking pieces for the chosen_piece.
     blocking_pieces = collision.provide_problem_spaces_same_color(chosen_piece)
+    attack_pieces = collision.provide_attack_spaces(chosen_piece)
+
     p blocking_pieces
+    p attack_pieces
 
     # Remove all spaces at and beyond the blocking piece.
     chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
+    chosen_piece.add_possible_attack_spaces(attack_pieces)
   end
 
   def choose_destination(player, chosen_piece)

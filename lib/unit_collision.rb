@@ -14,19 +14,35 @@ class UnitCollision
     problem_spaces = []
     possible_move_list = moving_piece.possible_moves
 
-    possible_move_list.each do |list_possible_space|
-      list_possible_space.each do |next_space|
+    possible_move_list.each do |possible_spaces_list|
+      possible_spaces_list.each do |next_space|
         next unless piece_in_space_exist?(next_space)
-
-        pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
-
-        break if pieces_different_color?(moving_piece, pot_piece)
 
         problem_spaces.push(next_space)
         break
       end
     end
     problem_spaces
+  end
+
+  def provide_attack_spaces(moving_piece)
+    # This finds the space where of the opposite color in possible spaces to move.
+    attack_spaces = []
+    possible_move_list = moving_piece.possible_moves
+
+    possible_move_list.each do |possible_spaces_list|
+      direction_list = []
+      possible_spaces_list.each do |next_space|
+        next unless piece_in_space_exist?(next_space)
+
+        pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
+
+        direction_list.push(next_space) if pieces_different_color?(moving_piece, pot_piece)
+        break
+      end
+      attack_spaces.push(direction_list)
+    end
+    attack_spaces
   end
 
   def piece_in_space_exist?(index)
