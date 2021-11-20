@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require './lib/chess_pieces/chess_pieces'
-require 'pry-byebug'
 
 # A rook chess piece. Moves vertically or horizontally, no limit. Can be blocked. 
 class Rook < ChessPieces

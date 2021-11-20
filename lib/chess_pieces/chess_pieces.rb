@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry-byebug'
-
 # Parent class of the chess pieces. This has all the methods needed to generate
 # possible moves for each piece.
 class ChessPieces
@@ -42,8 +40,6 @@ class ChessPieces
   end
 
   def add_possible_attack_spaces(list)
-    # The list should be an array of nested arrays that may be empty.
-    # i.e. [[], [], [[1, 3]], []]
     list.each_with_index do |attack_space, idx|
       @possible_moves[idx].push(attack_space.flatten(1)) unless attack_space.empty?
     end
