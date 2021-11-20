@@ -8,9 +8,10 @@ class GameLogic
     @list_of_black_pieces = @chess_board.get_list_of_pieces('black')
   end
 
-  def determine_check
+  def determine_check(king_color, enemy_color)
     # A king is in check when it is on a possible move space of an opposite
     # color piece.
+    
   end
 
   def determine_checkmate

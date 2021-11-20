@@ -161,8 +161,17 @@ class Game
   def game_start
     clear_console
     intro_message
+    add_object_collision_to_initial_board
     game_round
     game_end_message(@winner)
+  end
+
+  def add_object_collision_to_initial_board
+    @chess_board.each do |row|
+      row.each do |space|
+        update_piece_with_object_collision(space.piece)
+      end
+    end
   end
 
   def increment_turn_counter
