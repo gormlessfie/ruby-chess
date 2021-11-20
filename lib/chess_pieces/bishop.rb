@@ -11,7 +11,7 @@ class Bishop < ChessPieces
   end
 
   def create_key
-    [[-1, -1], [-1, 1], [1, -1], [1, 1]]
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]]
   end
 
   def determine_icon

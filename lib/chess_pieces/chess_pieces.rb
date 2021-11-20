@@ -22,18 +22,24 @@ class ChessPieces
   end
 
   def create_key
-    # The key is in the order: top-left, top, top-right, right, bottom-right
-    # bottom, bottom-left, middle-left
+    # The key is in the order: middle-left, top-left, top, top-right, right,
+    # bottom-right, bottom, bottom-left,
   end
 
   def remove_possible_spaces_where_conflict(list)
     # This removes the possible_moves where the piece can't go because of blocking.
     # List contains closest space to the chosen_piece that is blocked.
-    list.each do |blocking_space|
-      @possible_moves.each do |list_of_spaces| 
-        @possible_moves.delete(list_of_spaces) if blocking_space == list_of_spaces[0]
+    list.each do |problem_space|
+      @possible_moves.each_with_index do |list_possible, list_idx|
+        list_possible.each do |possible_space|
+          if possible_space == problem_space
+            index = list_possible.index(possible_space)
+            @possible_moves[list_idx] = @possible_moves[list_idx].slice(0, index)
+          end
+        end
       end
     end
+    @possible_moves.delete_if(&:empty?)
   end
 
   def create_possible_moves(current_position, white_key, black_key)

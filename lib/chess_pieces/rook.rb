@@ -12,7 +12,7 @@ class Rook < ChessPieces
   end
 
   def create_key
-    [[-1, 0], [1, 0], [0, -1], [0, 1]]
+    [[-1, 0], [0, 1], [1, 0], [0, -1]]
   end
 
   def determine_icon
