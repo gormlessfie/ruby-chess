@@ -84,6 +84,7 @@ class Game
     # Remove all spaces at and beyond the blocking piece.
     chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
     chosen_piece.add_possible_attack_spaces(attack_pieces)
+    chosen_piece.remove_empty_direction_possible_moves
   end
 
   def choose_destination(player, chosen_piece)

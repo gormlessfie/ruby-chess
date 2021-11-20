@@ -37,7 +37,10 @@ class UnitCollision
 
         pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
 
-        direction_list.push(next_space) if pieces_different_color?(moving_piece, pot_piece)
+        if pieces_different_color?(moving_piece, pot_piece) &&
+           piece_not_pawn?(moving_piece)
+          direction_list.push(next_space)
+        end
         break
       end
       attack_spaces.push(direction_list)
@@ -53,6 +56,10 @@ class UnitCollision
 
   def pieces_different_color?(piece_one, piece_two)
     piece_one.color != piece_two.color
+  end
+
+  def piece_not_pawn?(piece)
+    piece.name != 'pawn'
   end
 end
 
