@@ -74,7 +74,6 @@ class UnitCollision
     moving_piece.color == 'white' ? moving_piece.pawn_attack_key_white : moving_piece.pawn_attack_key_black
   end
 
-
   def piece_in_space_exist?(index)
     return true unless @collision_board.board[index[0]][index[1]].piece.nil?
 
