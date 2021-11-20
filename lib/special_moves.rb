@@ -9,16 +9,27 @@ class SpecialMoves
     @chess_board = board
   end
 
-  # Castling is done with the rook and king piece.
+  # Castling is done with the rook and king piece. King moves two spaces towards
+  # The rook being castled. The rook will be on the space the king skipped over.
     # Rook must not have moved
     # King must not have moved
     # King is not in check
     # King must not move over a space that can be attacked by an enemy piece.
     # Squares between the King and the Rook must be empty
-    # The King and Rook must occupy the same rank (row)
   
   def check_for_castling(board)
+    return if check_castling_requirements?
+
+  end
+
+  def check_castling_requirements?
+    # Check if King first turn = true
+
+    # Check if Rook first turn = true
+
+    # Check for empty squares between King and the Rook
     
+    # Check if the squares the king is moving over and onto is not a possible attack space.
   end
 
   # En passant
