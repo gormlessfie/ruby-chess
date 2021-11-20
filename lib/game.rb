@@ -18,8 +18,8 @@ class Game
 
   def game_round
     while @winner.nil?
-      player_turn(@white_player)
-      # player_turn(@black_player)
+      # player_turn(@white_player)
+      player_turn(@black_player)
       increment_turn_counter
     end
   end

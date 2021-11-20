@@ -39,8 +39,11 @@ class UnitCollision
 
         if pieces_different_color?(moving_piece, pot_piece)
           if piece_pawn?(moving_piece)
-            direction_list.push(calc_pawn_attack_spaces(moving_piece))
-            direction_list = direction_list.flatten
+            left_space = calc_pawn_attack(moving_piece, 0)
+            right_space = calc_pawn_attack(moving_piece, 1)
+
+            direction_list.push(left_space) unless left_space.empty?
+            direction_list.push(right_space) unless right_space.empty?
           else
             direction_list.push(next_space)
           end
@@ -48,29 +51,29 @@ class UnitCollision
         break
       end
       attack_spaces.push(direction_list)
-      if movi
+
+      # attack_spaces = attack_spaces.compact if piece_pawn?(moving_piece)
     end
     attack_spaces
   end
 
-  def calc_pawn_attack_spaces(moving_piece)
-    left_attack = calc_pawn_attack(moving_piece, 0)
-    right_attack = calc_pawn_attack(moving_piece, 1)
-
-    [left_attack, right_attack].compact
-  end
-
   def calc_pawn_attack(moving_piece, space)
+    pawn_attack_key = det_pawn_att_key(moving_piece)
     pos = moving_piece.current_pos
-    space_pos = [pos[0] + moving_piece.pawn_attack_key[space][0],
-                 pos[1] + moving_piece.pawn_attack_key[space][1]]
 
-    return unless space_pos.all? { |value| value.between?(0, 7) }
+    space_pos = [pos[0] + pawn_attack_key[space][0],
+                 pos[1] + pawn_attack_key[space][1]]
+    return [] unless space_pos[0].between?(0, 7) && space_pos[1].between?(0, 7)
 
     pot_piece = @collision_board.board[space_pos[0]][space_pos[1]].piece
 
-    return space_pos if pieces_different_color?(moving_piece, pot_piece)
+    return [space_pos] if pieces_different_color?(moving_piece, pot_piece)
   end
+
+  def det_pawn_att_key(moving_piece)
+    moving_piece.color == 'white' ? moving_piece.pawn_attack_key_white : moving_piece.pawn_attack_key_black
+  end
+
 
   def piece_in_space_exist?(index)
     return true unless @collision_board.board[index[0]][index[1]].piece.nil?

@@ -6,14 +6,23 @@ require './lib/chess_pieces/chess_pieces'
 # and 1 space afterwards. This piece can attack diagonally, if there is a
 # black piece 1 space diagonal from it in front.
 class Pawn < ChessPieces
-  attr_reader :first_turn, :pawn_attack_key
+  attr_reader :first_turn, :pawn_attack_key_white, :pawn_attack_key_black
 
   def initialize(color, index)
     white_key = create_white_key
     black_key = create_black_key
     super('pawn', color, index, white_key, black_key)
     @first_turn = true
-    @pawn_attack_key = [[-1, -1], [-1, 1]]
+    @pawn_attack_key_white = [[-1, -1], [-1, 1]]
+    @pawn_attack_key_black = [[1, -1], [1, 1]]
+  end
+
+  def add_possible_attack_spaces(list)
+    # The list should be an array of nested arrays that may be empty.
+    # i.e. [[], [], [[1, 3]], []]
+    list.each_with_index do |attack_space|
+      @possible_moves.push(attack_space.flatten(1)) unless attack_space.empty?
+    end
   end
 
   def update_first_turn_false
