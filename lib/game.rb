@@ -99,9 +99,8 @@ class Game
     # Move piece to designated space.
     @chess_board.move_piece(initial, destination)
 
-    # update pawn first turn if moved
-    piece.update_first_turn_false if piece.name.match('pawn') &&
-                                     piece.first_turn
+    # update pawn, king, or rook first turn if moved
+    update_piece_first_turn(piece)
 
     # Make origin space empty.
     @chess_board.make_space_empty(initial)
@@ -111,6 +110,17 @@ class Game
 
     # update possible moves of the piece
     piece.update_possible_moves
+  end
+
+  def update_piece_first_turn(piece)
+    piece.update_first_turn_false if piece.name.match('pawn') &&
+                                     piece.first_turn
+
+    piece.update_first_turn_false if piece.name.match('king') &&
+                                     piece.first_turn
+
+    piece.update_first_turn_false if piece.name.match('rook') &&
+                                     piece.first_turn
   end
 
   def print_chosen_piece(piece)
