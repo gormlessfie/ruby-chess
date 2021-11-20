@@ -51,8 +51,6 @@ class UnitCollision
         break
       end
       attack_spaces.push(direction_list)
-
-      # attack_spaces = attack_spaces.compact if piece_pawn?(moving_piece)
     end
     attack_spaces
   end
@@ -63,7 +61,7 @@ class UnitCollision
 
     space_pos = [pos[0] + pawn_attack_key[space][0],
                  pos[1] + pawn_attack_key[space][1]]
-    return [] unless space_pos[0].between?(0, 7) && space_pos[1].between?(0, 7)
+    return [] unless space_pos.all? { |value| value.between?(0, 7) }
 
     pot_piece = @collision_board.board[space_pos[0]][space_pos[1]].piece
 
@@ -88,4 +86,3 @@ class UnitCollision
     piece.name == 'pawn'
   end
 end
-
