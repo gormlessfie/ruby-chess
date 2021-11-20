@@ -16,8 +16,8 @@ class King < ChessPieces
   end
 
   def determine_icon
-    black = "\u2654"
-    white = "\u265A"
+    white = "\u2654"
+    black = "\u265A"
     super(black, white)
   end
 end

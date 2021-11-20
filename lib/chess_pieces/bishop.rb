@@ -15,8 +15,8 @@ class Bishop < ChessPieces
   end
 
   def determine_icon
-    black = "\u2657"
-    white = "\u265D"
+    white = "\u2657"
+    black = "\u265D"
     super(black, white)
   end
 

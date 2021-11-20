@@ -2,7 +2,7 @@
 
 require './lib/chess_pieces/chess_pieces'
 
-# A rook chess piece. Moves vertically or horizontally, no limit. Can be blocked. 
+# A rook chess piece. Moves vertically or horizontally, no limit. Can be blocked.
 class Rook < ChessPieces
   def initialize(color, index)
     white_key = create_key
@@ -15,8 +15,8 @@ class Rook < ChessPieces
   end
 
   def determine_icon
-    black = "\u2656"
-    white = "\u265C"
+    white = "\u2656"
+    black = "\u265C"
     super(black, white)
   end
 
