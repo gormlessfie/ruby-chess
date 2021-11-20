@@ -65,7 +65,11 @@ class Game
                                    !chosen_space.piece.possible_moves.empty?
 
       error_message_invalid_space(chosen_space, chosen_initial)
-      chosen_space.piece.update_possible_moves unless chosen_space.piece.nil?
+
+      unless chosen_space.piece.nil?
+        chosen_space.piece.update_possible_moves
+        update_piece_with_object_collision(chosen_space.piece) if chosen_space.piece
+      end
     end
   end
 
