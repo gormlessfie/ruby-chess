@@ -17,14 +17,6 @@ class Pawn < ChessPieces
     @pawn_attack_key_black = [[1, -1], [1, 1]]
   end
 
-  def add_possible_attack_spaces(list)
-    # The list should be an array of nested arrays that may be empty.
-    # i.e. [[], [], [[1, 3]], []]
-    list.each_with_index do |attack_space|
-      @possible_moves.push(attack_space.flatten(1)) unless attack_space.empty?
-    end
-  end
-
   def update_first_turn_false
     @first_turn = false
     update_white_key
