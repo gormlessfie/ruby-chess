@@ -37,15 +37,39 @@ class UnitCollision
 
         pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
 
-        if pieces_different_color?(moving_piece, pot_piece) &&
-           piece_not_pawn?(moving_piece)
-          direction_list.push(next_space)
+        if pieces_different_color?(moving_piece, pot_piece)
+          if piece_pawn?(moving_piece)
+            direction_list.push(calc_pawn_attack_spaces(moving_piece))
+            direction_list = direction_list.flatten
+          else
+            direction_list.push(next_space)
+          end
         end
         break
       end
       attack_spaces.push(direction_list)
+      if movi
     end
     attack_spaces
+  end
+
+  def calc_pawn_attack_spaces(moving_piece)
+    left_attack = calc_pawn_attack(moving_piece, 0)
+    right_attack = calc_pawn_attack(moving_piece, 1)
+
+    [left_attack, right_attack].compact
+  end
+
+  def calc_pawn_attack(moving_piece, space)
+    pos = moving_piece.current_pos
+    space_pos = [pos[0] + moving_piece.pawn_attack_key[space][0],
+                 pos[1] + moving_piece.pawn_attack_key[space][1]]
+
+    return unless space_pos.all? { |value| value.between?(0, 7) }
+
+    pot_piece = @collision_board.board[space_pos[0]][space_pos[1]].piece
+
+    return space_pos if pieces_different_color?(moving_piece, pot_piece)
   end
 
   def piece_in_space_exist?(index)
@@ -58,8 +82,8 @@ class UnitCollision
     piece_one.color != piece_two.color
   end
 
-  def piece_not_pawn?(piece)
-    piece.name != 'pawn'
+  def piece_pawn?(piece)
+    piece.name == 'pawn'
   end
 end
 

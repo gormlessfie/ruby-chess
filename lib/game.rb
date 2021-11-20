@@ -66,7 +66,7 @@ class Game
                                    !chosen_space.piece.possible_moves.empty?
 
       error_message_invalid_space(chosen_space, chosen_initial)
-      chosen_space.piece.update_possible_moves
+      chosen_space.piece.update_possible_moves unless chosen_space.piece.nil?
     end
   end
 
@@ -77,9 +77,6 @@ class Game
     # Provide a list of any blocking pieces for the chosen_piece.
     blocking_pieces = collision.provide_problem_spaces_same_color(chosen_piece)
     attack_pieces = collision.provide_attack_spaces(chosen_piece)
-
-    p blocking_pieces
-    p attack_pieces
 
     # Remove all spaces at and beyond the blocking piece.
     chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
