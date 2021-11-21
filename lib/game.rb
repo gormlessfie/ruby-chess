@@ -26,13 +26,8 @@ class Game
   end
 
   def player_turn(player)
-    # Check game conditions
-    check_game_conditions(player, @chess_board)
-
-    # Update king's possible movement if in check
-    # A king cannot move to a space where an opponent piece may move to.
-
-    # Player is forced to move king if king in check
+    # Update all pieces at the start of every turn
+    update_all_pieces(@chess_board.find_all_pieces)
 
     # display board
     print_board
@@ -66,16 +61,12 @@ class Game
     loop do
       chosen_initial = player.player_input('select')
       chosen_space = @chess_board.board[chosen_initial[0]][chosen_initial[1]]
-      # Update the possible_moves that the piece can move to in its current pos.
-      chosen_space&.piece&.update_possible_moves
-      update_piece_with_object_collision(chosen_space.piece) if chosen_space.piece
 
       return chosen_space.piece if chosen_space.piece &&
                                    chosen_space.piece.color == player.color &&
                                    !chosen_space.piece.possible_moves.empty?
 
       error_message_invalid_space(chosen_space, chosen_initial)
-      chosen_space&.piece&.update_possible_moves
     end
   end
 
@@ -126,7 +117,6 @@ class Game
 
     # update possible moves of the piece and add object collision.
     piece.update_possible_moves
-    update_piece_with_object_collision(piece) if piece
   end
 
   def update_piece_first_turn(piece)
@@ -140,26 +130,49 @@ class Game
                                      piece.first_turn
   end
 
-  def check_game_conditions(player, board)
-    game_logic = GameLogic.new(board)
+  def update_piece_moves(chosen_piece)
+    chosen_piece&.update_possible_moves
+    update_piece_with_object_collision(chosen_piece) if chosen_piece
+  end
+
+  def update_all_pieces(list_of_pieces)
+    list_of_pieces.each do |piece|
+      update_piece_moves(piece)
+
+      p "updating: #{piece.color} #{piece.name}"
+      p "possible moves: #{piece.possible_moves}"
+      puts "\n"
+    end
+  end
+
+  def check_game_condition
+    game_logic = GameLogic.new(@chess_board)
 
     # Is the current turn player's king in check?
-    if game_logic.king_in_check?(player.color)
+    # Update king check condition
+    player_king = @chess_board.get_king(player.color)
+
+    if game_logic.king_in_check?(player_king)
       send_update_king_check_condition(player, true)
     else
       send_update_king_check_condition(player, false)
     end
 
-    # Can a checkmate be declared?
-    game_logic.determine_checkmate
-    # Can a tie be declared?
-    game_logic.determine_tie
+    if player_king.check
+      # A king cannot move to a space where an opponent piece may move to.
+      # update_check_king_possible_movements
+      p "#{player_king.name} #{player_king.color} is in check!"
+
+      enemy_list = @chess_board.get_opponent_list_pieces(player.color)
+      enemy_list.each do |piece|
+        possible_list = piece.possible_moves
+        player_king.remove_possible_spaces_where_check(possible_list)
+      end
+    end
   end
 
   def send_update_king_check_condition(player, condition)
-    list = @chess_board.get_list_of_pieces(player.color)
-    king = list.select { |piece| piece.name.match('king') }[0]
-
+    king = @chess_board.get_king(player.color)
     king.update_check(condition)
   end
 
@@ -203,17 +216,8 @@ class Game
   def game_start
     clear_console
     intro_message
-    add_object_collision_to_initial_board
     game_round
     game_end_message(@winner)
-  end
-
-  def add_object_collision_to_initial_board
-    @chess_board.board.each do |row|
-      row.each do |space|
-        update_piece_with_object_collision(space.piece) if space.piece
-      end
-    end
   end
 
   def increment_turn_counter

@@ -35,7 +35,7 @@ class UnitCollision
     possible_move_list.each do |possible_spaces_list|
       direction_list = []
       possible_spaces_list.each do |next_space|
-        next unless piece_in_space_exist?(next_space)
+        next unless piece_in_space_exist?(next_space) && moving_piece != 'pawn'
 
         pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
 
