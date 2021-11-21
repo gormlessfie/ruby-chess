@@ -17,7 +17,7 @@ class Game
 
   def game_round
     while @winner.nil?
-      # player_turn(@white_player)
+      player_turn(@white_player)
       player_turn(@black_player)
       increment_turn_counter
     end
@@ -32,7 +32,7 @@ class Game
     chosen_initial = chosen_piece.current_pos
 
     # clear
-    # clear_console
+    clear_console
 
     # Display which piece has been chosen
     print_chosen_piece(chosen_piece)
@@ -46,7 +46,7 @@ class Game
     chosen_destination = choose_destination(player, chosen_piece)
 
     # clear
-    # clear_console
+    clear_console
 
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(chosen_piece, chosen_initial, chosen_destination)
@@ -167,9 +167,9 @@ class Game
   end
 
   def add_object_collision_to_initial_board
-    @chess_board.each do |row|
+    @chess_board.board.each do |row|
       row.each do |space|
-        update_piece_with_object_collision(space.piece)
+        update_piece_with_object_collision(space.piece) if space.piece
       end
     end
   end

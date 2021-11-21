@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # This checks if the board is in a state where a winner can be declared.
+# This object should be created and ran before player chooses piece to move.
 class GameLogic
   def initialize(board)
     @chess_board = board
@@ -11,7 +12,7 @@ class GameLogic
   def determine_check(king_color, enemy_color)
     # A king is in check when it is on a possible move space of an opposite
     # color piece.
-    
+
   end
 
   def determine_checkmate

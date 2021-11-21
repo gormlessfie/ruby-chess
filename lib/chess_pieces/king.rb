@@ -12,7 +12,7 @@ class King < ChessPieces
     black_key = create_key
     super('king', color, index, white_key, black_key)
     @first_turn = true
-    @in_check = false
+    @check = false
   end
 
   def create_key
@@ -29,7 +29,7 @@ class King < ChessPieces
     @first_turn = false
   end
 
-  def update_in_check
-    @in_check = true
+  def update_check
+    @check = true
   end
 end
