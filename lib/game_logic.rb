@@ -29,10 +29,17 @@ class GameLogic
     false
   end
 
-
   def determine_checkmate
     # A checkmate is decided when a king is checked and has no possible moves
     # without going into another check.
+
+    # Check player's king to see if it is in @check
+
+    # Check the king's possible moves.
+
+    # If king has no possible moves, then checkmate is declared
+    
+    # 
   end
 
   def determine_tie

@@ -29,6 +29,11 @@ class Game
     # Check game conditions
     check_game_conditions(player, @chess_board)
 
+    # Update king's possible movement if in check
+    # A king cannot move to a space where an opponent piece may move to.
+
+    # Player is forced to move king if king in check
+
     # display board
     print_board
 
