@@ -29,6 +29,8 @@ class Game
     # Update all pieces at the start of every turn
     update_all_pieces(@chess_board.find_all_pieces)
 
+    check_game_condition
+
     # display board
     print_board
 
@@ -133,13 +135,7 @@ class Game
   end
 
   def update_all_pieces(list_of_pieces)
-    list_of_pieces.each do |piece|
-      update_piece_moves(piece)
-
-      p "updating: #{piece.color} #{piece.name}"
-      p "possible moves: #{piece.possible_moves}"
-      puts "\n"
-    end
+    list_of_pieces.each { |piece| update_piece_moves(piece) }
   end
 
   def check_game_condition
