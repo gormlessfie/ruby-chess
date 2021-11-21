@@ -90,8 +90,14 @@ class Game
       return destination if chosen_piece.possible_moves.flatten(1).include?(destination)
 
       # check if input is within possible moves for that piece
+
+      clear_console
+      print_board
+      puts "\n"
+
       print '       '
       puts "#{destination} is not a possible move."
+      print_possible_moves_piece(chosen_piece)
     end
   end
 
@@ -140,6 +146,9 @@ class Game
   end
 
   def error_message_invalid_space(space, position)
+    clear_console
+    print_board
+    puts "\n"
     print '       '
     if space.piece.nil?
       puts "You have selected #{position} which contains no chess piece."
