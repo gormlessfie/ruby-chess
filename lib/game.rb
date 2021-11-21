@@ -171,8 +171,8 @@ class Game
     clear_console
     intro_message
     add_object_collision_to_initial_board
-    game_round
-    game_end_message(@winner)
+    #game_round
+    #game_end_message(@winner)
   end
 
   def add_object_collision_to_initial_board
