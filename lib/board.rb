@@ -75,6 +75,10 @@ class Board
     list
   end
 
+  def get_opponent_list_pieces(color)
+    color.match('white') ? get_list_of_pieces('black') : get_list_of_pieces('white')
+  end
+  
   def get_king(color)
     king = get_list_of_pieces(color).select { |piece| piece.name.match('king') }
     king[0]
