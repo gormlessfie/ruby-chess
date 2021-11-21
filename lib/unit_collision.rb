@@ -48,7 +48,6 @@ class UnitCollision
       end
       attack_spaces.push(direction_list)
     end
-    p "attack spaces: #{attack_spaces}" if moving_piece.name == 'pawn'
     attack_spaces
   end
 
