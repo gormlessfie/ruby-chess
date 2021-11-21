@@ -29,7 +29,7 @@ class King < ChessPieces
     @first_turn = false
   end
 
-  def update_check
-    @check = true
+  def update_check(condition)
+    @check = condition
   end
 end

@@ -5,6 +5,8 @@ require './lib/player'
 require './lib/game_logic'
 require './lib/unit_collision'
 
+require 'pry-byebug'
+
 # This holds all the methods that runs the game such as turns.
 class Game
   def initialize
@@ -24,6 +26,9 @@ class Game
   end
 
   def player_turn(player)
+    # Check game conditions
+    check_game_conditions(player, @chess_board)
+
     # display board
     print_board
 
@@ -56,8 +61,8 @@ class Game
     loop do
       chosen_initial = player.player_input('select')
       chosen_space = @chess_board.board[chosen_initial[0]][chosen_initial[1]]
-
       # Update the possible_moves that the piece can move to in its current pos.
+      chosen_space&.piece&.update_possible_moves
       update_piece_with_object_collision(chosen_space.piece) if chosen_space.piece
 
       return chosen_space.piece if chosen_space.piece &&
@@ -130,6 +135,29 @@ class Game
                                      piece.first_turn
   end
 
+  def check_game_conditions(player, board)
+    game_logic = GameLogic.new(board)
+
+    # Is the current turn player's king in check?
+    if game_logic.king_in_check?(player.color)
+      send_update_king_check_condition(player, true)
+    else
+      send_update_king_check_condition(player, false)
+    end
+
+    # Can a checkmate be declared?
+    game_logic.determine_checkmate
+    # Can a tie be declared?
+    game_logic.determine_tie
+  end
+
+  def send_update_king_check_condition(player, condition)
+    list = @chess_board.get_list_of_pieces(player.color)
+    king = list.select { |piece| piece.name.match('king') }[0]
+
+    king.update_check(condition)
+  end
+
   def print_chosen_piece(piece)
     print '       '
     puts "You have chosen a #{piece.color} #{piece.name} at " \
@@ -171,8 +199,8 @@ class Game
     clear_console
     intro_message
     add_object_collision_to_initial_board
-    #game_round
-    #game_end_message(@winner)
+    game_round
+    game_end_message(@winner)
   end
 
   def add_object_collision_to_initial_board
