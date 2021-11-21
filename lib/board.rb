@@ -75,6 +75,11 @@ class Board
     list
   end
 
+  def get_king(color)
+    king = get_list_of_pieces(color).select { |piece| piece.name.match('king') }
+    king[0]
+  end
+
   def display_board
     print '         '
     puts ' 0  1  2  3  4  5  6  7 '
