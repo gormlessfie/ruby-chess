@@ -114,9 +114,6 @@ class Game
 
     # update current_pos of the piece
     piece.update_current_pos(destination)
-
-    # update possible moves of the piece and add object collision.
-    piece.update_possible_moves
   end
 
   def update_piece_first_turn(piece)

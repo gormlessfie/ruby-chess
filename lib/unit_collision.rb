@@ -35,21 +35,20 @@ class UnitCollision
     possible_move_list.each do |possible_spaces_list|
       direction_list = []
       possible_spaces_list.each do |next_space|
-        next unless piece_in_space_exist?(next_space) && moving_piece != 'pawn'
-
-        pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
-
         if piece_pawn?(moving_piece)
           pawn_attack_helper(direction_list, moving_piece, 0)
           pawn_attack_helper(direction_list, moving_piece, 1)
-        elsif pieces_different_color?(moving_piece, pot_piece)
-          direction_list.push(next_space)
-        end
+        else
+          next unless piece_in_space_exist?(next_space)
 
+          pot_piece = @collision_board.board[next_space[0]][next_space[1]].piece
+          direction_list.push(next_space) if pieces_different_color?(moving_piece, pot_piece)
+        end
         break
       end
       attack_spaces.push(direction_list)
     end
+    p "attack spaces: #{attack_spaces}" if moving_piece.name == 'pawn'
     attack_spaces
   end
 
@@ -62,7 +61,6 @@ class UnitCollision
     return nil unless space_pos.all? { |value| value.between?(0, 7) }
 
     pot_piece = @collision_board.board[space_pos[0]][space_pos[1]].piece
-
     return [space_pos] if pieces_different_color?(moving_piece, pot_piece)
   end
 
