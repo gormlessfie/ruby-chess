@@ -29,8 +29,17 @@ class Game
     # Update all pieces at the start of every turn
     update_all_pieces(@chess_board.find_all_pieces)
 
-    check_game_condition(player)
+    # Create game_logic with current board
+    game_logic = GameLogic.new(@chess_board)
+    player_king = @chess_board.get_king(player.color)
 
+    # Check & update player king check
+    update_king_check_condition(game_logic, king)
+
+    # If player king is in check, then force player to move king.
+    if game_logic.king_in_check?(player_king)
+
+    end
     # display board
     print_board
 
@@ -142,22 +151,8 @@ class Game
     list_of_pieces.each { |piece| update_piece_moves(piece) }
   end
 
-  def check_game_condition(player)
-    game_logic = GameLogic.new(@chess_board)
-
-    # Is the current turn player's king in check?
-    # Update king check condition
-    player_king = @chess_board.get_king(player.color)
-
-    if game_logic.king_in_check?(player_king)
-      send_update_king_check_condition(player, true)
-    else
-      send_update_king_check_condition(player, false)
-    end
-
-    if player_king.check
-      p "#{player_king.color} #{player_king.name} is in check!"
-    end
+  def update_king_check_condition(game_logic, king)
+    game_logic.king_in_check?(king) ? king.update_check(true) : king.update_check(false)
   end
 
   def send_update_king_remove_check_spaces(color, king)
@@ -168,11 +163,6 @@ class Game
       array.concat(possible_list)
     end
     king.remove_possible_spaces_where_check(array)
-  end
-
-  def send_update_king_check_condition(player, condition)
-    king = @chess_board.get_king(player.color)
-    king.update_check(condition)
   end
 
   def print_chosen_piece(piece)
