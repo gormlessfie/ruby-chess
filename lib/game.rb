@@ -19,9 +19,9 @@ class Game
 
   def game_round
     while @winner.nil?
-      player_turn(@white_player)
-      player_turn(@black_player)
-      increment_turn_counter
+      player_turn(@white_player) if @winner.nil?
+      player_turn(@black_player) if @winner.nil?
+      increment_turn_counter if @winner.nil?
     end
   end
 
@@ -37,21 +37,34 @@ class Game
     update_king_check_condition(game_logic, player_king)
 
     # Check board for checkmate condition
-    game_logic.determine_checkmate
 
     # Check board for tie condition
+    game_logic.determine_tie
 
     # display board
     print_board
 
-    # Player either is forced to move king or they can pick which piece to move.
+    # If player is checked, must either move king or a piece that stops the check.
+    # A piece that stops the check is one that makes the space the king is on no longer
+    # possible.
+    # The piece should be able to eat the attacking piece, or move to a space
+    # that is within the list of possible move space that blocks movement to
+    # the king.
+  
     if game_logic.king_in_check?(player_king)
+      # Find the attacking piece
+      
+      # Find the list of pieces that can stop the check
+
+        # The list should contain the player's color pieces that can move to the
+        # attacking piece's possible spaces or on the attack piece space.
+
       # pick a piece to move.
       chosen_piece = player_king
       chosen_initial = chosen_piece.current_pos
 
       # clear
-      clear_console
+      #clear_console
 
       # Display which piece has been chosen
       print_check_king_message
@@ -77,7 +90,7 @@ class Game
     chosen_destination = choose_destination(player, chosen_piece)
 
     # clear
-    clear_console
+    #clear_console
 
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(chosen_piece, chosen_initial, chosen_destination)
@@ -242,7 +255,7 @@ class Game
       This is the game of Chess.
 
       White will go first and then black. Each player must move a piece even if
-      it will be detrimental.
+      it will be detrimental. A tie will be declared when 50 turns are taken.
 
       Input a string such as '3,4' to select a piece to move. You cannot
       switch once selected.
