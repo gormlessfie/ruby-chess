@@ -38,6 +38,7 @@ class Game
 
     # Check board for checkmate condition
     game_logic.checkmate?(player_king)
+
     # Check board for tie condition
     game_logic.determine_tie
 
@@ -48,28 +49,8 @@ class Game
     # that is within the list of possible move space that blocks movement to
     # the king.
     if game_logic.king_in_check?(player_king)
-      simulated_board = nil
-      loop do
-        puts 'You must stop the check. Please select a unit that can protect ' \
-        'your king!'
-        # create a new board object to simulate the move
-        simulated_board = Board.new
-        simulated_board.board = @chess_board.deep_copy
-
-        # perform the move on the simulated board
-        player_move_piece(player, simulated_board)
-
-        # create a new game_logic
-        simulated_logic = GameLogic.new(simulated_board)
-        simulated_king = simulated_board.get_king(player.color)
-
-        update_king_check_condition(simulated_logic, simulated_king)
-
-        valid_move = simulated_logic.king_in_check?(simulated_king)
-        break unless valid_move
-      end
+      simulated_board = simulate_valid_move_when_check(@chess_board, player)
       @chess_board.board = simulated_board.deep_copy
-      update_all_pieces(@chess_board, @chess_board.find_all_pieces)
     else
       player_move_piece(player, @chess_board)
     end
@@ -100,6 +81,33 @@ class Game
     chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
     chosen_piece.add_possible_attack_spaces(attack_pieces)
     chosen_piece.remove_empty_direction_possible_moves
+  end
+
+  def simulate_valid_move_when_check(board, player)
+    simulated_board = nil
+    loop do
+      puts 'You must stop the check. Please select a unit that can move to ' \
+      'protect your king!'
+      # create a new board object to simulate the move
+      simulated_board = Board.new
+      simulated_board.board = board.deep_copy
+
+      # perform the move on the simulated board
+      player_move_piece(player, simulated_board)
+
+      # Update the possible moves of the attacking piece.
+      update_all_pieces(simulated_board, simulated_board.find_all_pieces)
+
+      # create a new game_logic
+      simulated_logic = GameLogic.new(simulated_board)
+      simulated_king = simulated_board.get_king(player.color)
+
+      update_king_check_condition(simulated_logic, simulated_king)
+
+      valid_move = simulated_logic.king_in_check?(simulated_king)
+      break unless valid_move
+    end
+    simulated_board
   end
 
   def find_valid_pieces_stop_check(player, king)
