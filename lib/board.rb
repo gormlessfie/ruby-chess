@@ -82,7 +82,7 @@ class Board
   def find_all_pieces
     get_list_of_pieces('white').concat(get_list_of_pieces('black'))
   end
-  
+
   def get_king(color)
     king = get_list_of_pieces(color).select { |piece| piece.name.match('king') }
     king[0]
@@ -109,5 +109,9 @@ class Board
 
   def make_space_empty(position)
     @board[position[0]][position[1]].piece = nil
+  end
+
+  def deep_copy
+    Marshal.load(Marshal.dump(@board))
   end
 end

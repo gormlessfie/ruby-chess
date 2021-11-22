@@ -27,7 +27,7 @@ class Game
 
   def player_turn(player)
     # Update all pieces at the start of every turn
-    update_all_pieces(@chess_board.find_all_pieces)
+    update_all_pieces(@chess_board, @chess_board.find_all_pieces)
 
     # Create game_logic with current board
     game_logic = GameLogic.new(@chess_board)
@@ -53,7 +53,7 @@ class Game
         p 'THIS IS SIMULATED BOARD'
         # create a new board object to simulate the move
         simulated_board = Board.new
-        simulated_board.board = @chess_board.board.dup
+        simulated_board.board = @chess_board.deep_copy
 
         # perform the move on the simulated board
         player_move_piece(player, simulated_board)
@@ -65,15 +65,14 @@ class Game
         update_king_check_condition(simulated_logic, simulated_king)
 
         valid_move = simulated_logic.king_in_check?(simulated_king)
-        break if valid_move == false
+        break unless valid_move
+
+        puts 'You must stop the check. Please select a unit that can protect ' \
+             'your king!'
       end
-      p 'base board'
-      print_board(@chess_board)
 
-      puts "\n"
-
-      p 'sim board'
-      print_board(simulated_board)
+      @chess_board.board = simulated_board.deep_copy
+      update_all_pieces(@chess_board, @chess_board.find_all_pieces)
     else
       player_move_piece(player, @chess_board)
     end
@@ -92,9 +91,9 @@ class Game
     end
   end
 
-  def update_piece_with_object_collision(chosen_piece)
+  def update_piece_with_object_collision(board, chosen_piece)
     # Create UnitCollision object
-    collision = UnitCollision.new(@chess_board)
+    collision = UnitCollision.new(board)
 
     # Provide a list of any blocking pieces for the chosen_piece.
     blocking_pieces = collision.provide_problem_spaces_same_color(chosen_piece)
@@ -216,25 +215,25 @@ class Game
                                      piece.first_turn
   end
 
-  def update_piece_moves(chosen_piece)
+  def update_piece_moves(board, chosen_piece)
     chosen_piece&.update_possible_moves
-    update_piece_with_object_collision(chosen_piece) if chosen_piece
+    update_piece_with_object_collision(board, chosen_piece) if chosen_piece
 
     if chosen_piece.name.match('king')
-      send_update_king_remove_check_spaces(chosen_piece.color, chosen_piece)
+      send_update_king_remove_check_spaces(board, chosen_piece.color, chosen_piece)
     end
   end
 
-  def update_all_pieces(list_of_pieces)
-    list_of_pieces.each { |piece| update_piece_moves(piece) }
+  def update_all_pieces(board, list_of_pieces)
+    list_of_pieces.each { |piece| update_piece_moves(board, piece) }
   end
 
   def update_king_check_condition(game_logic, king)
     game_logic.king_in_check?(king) ? king.update_check(true) : king.update_check(false)
   end
 
-  def send_update_king_remove_check_spaces(color, king)
-    enemy_list = @chess_board.get_opponent_list_pieces(color)
+  def send_update_king_remove_check_spaces(board, color, king)
+    enemy_list = board.get_opponent_list_pieces(color)
     array = []
     enemy_list.each do |piece|
       possible_list = piece.possible_moves
@@ -316,4 +315,5 @@ class Game
        #{winner.color.upcase} has won!
     )
   end
+
 end
