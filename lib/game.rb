@@ -34,24 +34,39 @@ class Game
     player_king = @chess_board.get_king(player.color)
 
     # Check & update player king check
-    update_king_check_condition(game_logic, king)
+    update_king_check_condition(game_logic, player_king)
 
-    # If player king is in check, then force player to move king.
-    if game_logic.king_in_check?(player_king)
+    # Check board for checkmate condition
+    game_logic.determine_checkmate
 
-    end
+    # Check board for tie condition
+
     # display board
     print_board
 
-    # pick a piece to move.
-    chosen_piece = setup_piece(player)
-    chosen_initial = chosen_piece.current_pos
+    # Player either is forced to move king or they can pick which piece to move.
+    if game_logic.king_in_check?(player_king)
+      # pick a piece to move.
+      chosen_piece = player_king
+      chosen_initial = chosen_piece.current_pos
 
-    # clear
-    clear_console
+      # clear
+      clear_console
 
-    # Display which piece has been chosen
-    print_chosen_piece(chosen_piece)
+      # Display which piece has been chosen
+      print_check_king_message
+    else
+      # pick a piece to move.
+      chosen_piece = setup_piece(player)
+      chosen_initial = chosen_piece.current_pos
+
+      # clear
+      clear_console
+
+      # Display which piece has been chosen
+      print_chosen_piece(chosen_piece)
+    end
+
     # display board
     print_board
 
@@ -178,6 +193,11 @@ class Game
 
   def print_board
     @chess_board.display_board
+  end
+
+  def print_check_king_message
+    print '       '
+    puts 'Your king is in check. You must move your king.'
   end
 
   def error_message_invalid_space(space, position)
