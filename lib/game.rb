@@ -83,14 +83,14 @@ class Game
     chosen_piece.remove_empty_direction_possible_moves
   end
 
-  def simulate_valid_move_when_check(board, player)
+  def simulate_valid_move_when_check(base_board, player)
     simulated_board = nil
     loop do
       puts 'You must stop the check. Please select a unit that can move to ' \
       'protect your king!'
       # create a new board object to simulate the move
       simulated_board = Board.new
-      simulated_board.board = board.deep_copy
+      simulated_board.board = base_board.deep_copy
 
       # perform the move on the simulated board
       player_move_piece(player, simulated_board)
@@ -110,7 +110,7 @@ class Game
     simulated_board
   end
 
-  def find_valid_pieces_stop_check(player, king)
+  def find_valid_pieces_stop_check(board, player, king)
     # A valid piece is a piece with a possible moves list that can eat the
     # attacking piece or move into the possible moves list of the attacking piece
     # The king is also a valid piece, given that the king has possible moves.
@@ -118,16 +118,24 @@ class Game
     valid_pieces = []
     valid_pieces.push(king)
     # Get the list of the player's pieces
-    list_player_pieces = @chess_board.get_list_of_pieces(player.color)
+    list_player_pieces = board.get_list_of_pieces(player.color)
+    
+    p list_player_pieces
 
     # Get the attacking piece.
-    enemy_list = @chess_board.get_list_of_pieces(player.opponent_color)
+    enemy_list = board.get_list_of_pieces(player.opponent_color)
+
+    p enemy_list
 
     attacking_piece = enemy_list.select do |piece|
       piece.possible_moves.include?([king.current_pos])
     end
 
+    return if attacking_piece.nil?
+
     attacking_piece = attacking_piece[0]
+
+    p attacking_piece
 
     list_player_pieces.each do |piece|
       next if piece.possible_moves.empty?
@@ -141,8 +149,6 @@ class Game
     # A piece is added to the valid list if the piece's possible_moves list has
     # the attacking_piece current_pos or a possible_move that is the same as
     # the attacking_piece possible_move.
-
-    # if attacking_piece.possible_moves includes the space of 
 
     valid_pieces
   end
@@ -205,7 +211,7 @@ class Game
     # Make origin space empty.
     board.make_space_empty(initial)
 
-    # update current_pos of the piece
+    # update current_pos of the piece.
     piece.update_current_pos(destination)
   end
 
@@ -320,5 +326,4 @@ class Game
        #{winner.color.upcase} has won!
     )
   end
-
 end
