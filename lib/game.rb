@@ -50,7 +50,8 @@ class Game
     if game_logic.king_in_check?(player_king)
       simulated_board = nil
       loop do
-        p 'THIS IS SIMULATED BOARD'
+        puts 'You must stop the check. Please select a unit that can protect ' \
+        'your king!'
         # create a new board object to simulate the move
         simulated_board = Board.new
         simulated_board.board = @chess_board.deep_copy
@@ -66,11 +67,7 @@ class Game
 
         valid_move = simulated_logic.king_in_check?(simulated_king)
         break unless valid_move
-
-        puts 'You must stop the check. Please select a unit that can protect ' \
-             'your king!'
       end
-
       @chess_board.board = simulated_board.deep_copy
       update_all_pieces(@chess_board, @chess_board.find_all_pieces)
     else
