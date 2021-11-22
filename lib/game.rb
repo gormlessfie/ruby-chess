@@ -41,82 +41,54 @@ class Game
     # Check board for tie condition
     game_logic.determine_tie
 
-    # display board
-    print_board
-
     # If player is checked, must either move king or a piece that stops the check.
     # A piece that stops the check is one that makes the space the king is on no longer
     # possible.
     # The piece should be able to eat the attacking piece, or move to a space
     # that is within the list of possible move space that blocks movement to
     # the king.
-
     if game_logic.king_in_check?(player_king)
-      # Find the attacking piece
-
-      # Find the list of pieces that can stop the check
-      list_valid_pieces = find_valid_pieces_stop_check(player, player_king)
-        # The list should contain the player's color pieces that can move to the
-        # attacking piece's possible spaces or on the attack piece space.
-
-      # pick a piece that can stop the check.
-      chosen_piece = nil
+      simulated_board = nil
       loop do
-        chosen_piece = setup_piece(player)
+        p 'THIS IS SIMULATED BOARD'
+        # create a new board object to simulate the move
+        simulated_board = Board.new
+        simulated_board.board = @chess_board.board.dup
 
-        break if list_valid_pieces.include?(chosen_piece)
+        # perform the move on the simulated board
+        player_move_piece(player, simulated_board)
 
-        print '       '
-        puts 'You must choose a piece that can stop the check'
-        list_valid_pieces.each do |piece|
-          puts "The valid pieces are: #{piece.name} at #{piece.current_pos}"
-        end
+        # create a new game_logic
+        simulated_logic = GameLogic.new(simulated_board)
+        simulated_king = simulated_board.get_king(player.color)
+
+        update_king_check_condition(simulated_logic, simulated_king)
+
+        valid_move = simulated_logic.king_in_check?(simulated_king)
+        break if valid_move == false
       end
-      chosen_initial = chosen_piece.current_pos
+      p 'base board'
+      print_board(@chess_board)
 
-      # clear
-      #clear_console
+      puts "\n"
 
-      # Display which piece has been chosen
-      print_check_king_message
+      p 'sim board'
+      print_board(simulated_board)
     else
-      # pick a piece to move.
-      chosen_piece = setup_piece(player)
-      chosen_initial = chosen_piece.current_pos
-
-      # clear
-      clear_console
-
-      # Display which piece has been chosen
-      print_chosen_piece(chosen_piece)
+      player_move_piece(player, @chess_board)
     end
-
-    # display board
-    print_board
-
-    # print all possible moves that the player can do.
-    print_possible_moves_piece(chosen_piece)
-
-    # get another player input (player, destination)
-    chosen_destination = choose_destination(player, chosen_piece)
-
-    # clear
-    #clear_console
-
-    # move piece, update old spot, update current pos, update new moves
-    move_piece_complete(chosen_piece, chosen_initial, chosen_destination)
   end
 
-  def setup_piece(player)
+  def setup_piece(board, player)
     loop do
       chosen_initial = player.player_input('select')
-      chosen_space = @chess_board.board[chosen_initial[0]][chosen_initial[1]]
+      chosen_space = board.board[chosen_initial[0]][chosen_initial[1]]
 
       return chosen_space.piece if chosen_space.piece &&
                                    chosen_space.piece.color == player.color &&
                                    !chosen_space.piece.possible_moves.empty?
 
-      error_message_invalid_space(chosen_space, chosen_initial)
+      error_message_invalid_space(board, chosen_space, chosen_initial)
     end
   end
 
@@ -171,7 +143,37 @@ class Game
     valid_pieces
   end
 
-  def choose_destination(player, chosen_piece)
+  def player_move_piece(player, board)
+    # display board
+    print_board(board)
+
+    # pick a piece to move.
+    chosen_piece = setup_piece(board, player)
+    chosen_initial = chosen_piece.current_pos
+
+    # clear
+    clear_console
+
+    # display board
+    print_board(board)
+
+    # Display which piece has been chosen
+    print_chosen_piece(chosen_piece)
+
+    # print all possible moves that the player can do.
+    print_possible_moves_piece(chosen_piece)
+
+    # get another player input (player, destination)
+    chosen_destination = choose_destination(player, chosen_piece, board)
+
+    # clear
+    clear_console
+
+    # move piece, update old spot, update current pos, update new moves
+    move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination)
+  end
+
+  def choose_destination(player, chosen_piece, board)
     loop do
       destination = player.player_input('destination')
 
@@ -180,7 +182,7 @@ class Game
       # check if input is within possible moves for that piece
 
       clear_console
-      print_board
+      print_board(board)
       puts "\n"
 
       print '       '
@@ -189,15 +191,15 @@ class Game
     end
   end
 
-  def move_piece_complete(piece, initial, destination)
+  def move_piece_complete(board, piece, initial, destination)
     # Move piece to designated space.
-    @chess_board.move_piece(initial, destination)
+    board.move_piece(initial, destination)
 
     # update pawn, king, or rook first turn if moved
     update_piece_first_turn(piece)
 
     # Make origin space empty.
-    @chess_board.make_space_empty(initial)
+    board.make_space_empty(initial)
 
     # update current_pos of the piece
     piece.update_current_pos(destination)
@@ -252,21 +254,16 @@ class Game
     puts "Please choose from these possible moves: #{piece.possible_moves}"
   end
 
-  def print_board
-    @chess_board.display_board
+  def print_board(board)
+    board.display_board
   end
 
-  def print_check_king_message
-    print '       '
-    puts "You have chosen a #{piece.color} #{piece.name} at " \
-         "#{piece.current_pos}. This piece must stop the check."
-  end
-
-  def error_message_invalid_space(space, position)
+  def error_message_invalid_space(board, space, position)
     clear_console
-    print_board
+    print_board(board)
     puts "\n"
     print '       '
+
     if space.piece.nil?
       puts "You have selected #{position} which contains no chess piece."
     elsif space.piece.possible_moves.empty?
