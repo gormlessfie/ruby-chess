@@ -37,7 +37,7 @@ class Game
     update_king_check_condition(game_logic, player_king)
 
     # Check board for checkmate condition
-
+    game_logic.checkmate?(player_king)
     # Check board for tie condition
     game_logic.determine_tie
 
@@ -50,17 +50,28 @@ class Game
     # The piece should be able to eat the attacking piece, or move to a space
     # that is within the list of possible move space that blocks movement to
     # the king.
-  
+
     if game_logic.king_in_check?(player_king)
       # Find the attacking piece
-      
-      # Find the list of pieces that can stop the check
 
+      # Find the list of pieces that can stop the check
+      list_valid_pieces = find_valid_pieces_stop_check(player, player_king)
         # The list should contain the player's color pieces that can move to the
         # attacking piece's possible spaces or on the attack piece space.
 
-      # pick a piece to move.
-      chosen_piece = player_king
+      # pick a piece that can stop the check.
+      chosen_piece = nil
+      loop do
+        chosen_piece = setup_piece(player)
+
+        break if list_valid_pieces.include?(chosen_piece)
+
+        print '       '
+        puts 'You must choose a piece that can stop the check'
+        list_valid_pieces.each do |piece|
+          puts "The valid pieces are: #{piece.name} at #{piece.current_pos}"
+        end
+      end
       chosen_initial = chosen_piece.current_pos
 
       # clear
@@ -121,6 +132,43 @@ class Game
     chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
     chosen_piece.add_possible_attack_spaces(attack_pieces)
     chosen_piece.remove_empty_direction_possible_moves
+  end
+
+  def find_valid_pieces_stop_check(player, king)
+    # A valid piece is a piece with a possible moves list that can eat the
+    # attacking piece or move into the possible moves list of the attacking piece
+    # The king is also a valid piece, given that the king has possible moves.
+
+    valid_pieces = []
+    valid_pieces.push(king)
+    # Get the list of the player's pieces
+    list_player_pieces = @chess_board.get_list_of_pieces(player.color)
+
+    # Get the attacking piece.
+    enemy_list = @chess_board.get_list_of_pieces(player.opponent_color)
+
+    attacking_piece = enemy_list.select do |piece|
+      piece.possible_moves.include?([king.current_pos])
+    end
+
+    attacking_piece = attacking_piece[0]
+
+    list_player_pieces.each do |piece|
+      next if piece.possible_moves.empty?
+
+      if attacking_piece.possible_moves.intersection(piece.possible_moves).length.positive? ||
+         piece.possible_moves.include?([attacking_piece.current_pos])
+        valid_pieces.push(piece)
+      end
+    end
+    # The attacking piece is the piece with the possible_moves list that can move on the king.
+    # A piece is added to the valid list if the piece's possible_moves list has
+    # the attacking_piece current_pos or a possible_move that is the same as
+    # the attacking_piece possible_move.
+
+    # if attacking_piece.possible_moves includes the space of 
+
+    valid_pieces
   end
 
   def choose_destination(player, chosen_piece)
@@ -210,7 +258,8 @@ class Game
 
   def print_check_king_message
     print '       '
-    puts 'Your king is in check. You must move your king.'
+    puts "You have chosen a #{piece.color} #{piece.name} at " \
+         "#{piece.current_pos}. This piece must stop the check."
   end
 
   def error_message_invalid_space(space, position)
