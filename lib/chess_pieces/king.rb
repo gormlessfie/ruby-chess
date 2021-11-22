@@ -5,7 +5,7 @@ require './lib/chess_pieces/chess_pieces'
 # A king chess piece. Can move 1 space in any direction. Loses if checkmated
 # Can be blocked.
 class King < ChessPieces
-  attr_reader :first_turn
+  attr_reader :first_turn, :check
 
   def initialize(color, index)
     white_key = create_key
@@ -13,6 +13,12 @@ class King < ChessPieces
     super('king', color, index, white_key, black_key)
     @first_turn = true
     @check = false
+  end
+
+  def remove_possible_spaces_where_check(enemy_piece_possible_moves)
+    @possible_moves = @possible_moves.delete_if do |space|
+      enemy_piece_possible_moves.include?(space)
+    end
   end
 
   def create_key

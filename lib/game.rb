@@ -29,7 +29,7 @@ class Game
     # Update all pieces at the start of every turn
     update_all_pieces(@chess_board.find_all_pieces)
 
-    check_game_condition
+    check_game_condition(player)
 
     # display board
     print_board
@@ -132,13 +132,17 @@ class Game
   def update_piece_moves(chosen_piece)
     chosen_piece&.update_possible_moves
     update_piece_with_object_collision(chosen_piece) if chosen_piece
+
+    if chosen_piece.name.match('king')
+      send_update_king_remove_check_spaces(chosen_piece.color, chosen_piece)
+    end
   end
 
   def update_all_pieces(list_of_pieces)
     list_of_pieces.each { |piece| update_piece_moves(piece) }
   end
 
-  def check_game_condition
+  def check_game_condition(player)
     game_logic = GameLogic.new(@chess_board)
 
     # Is the current turn player's king in check?
@@ -152,16 +156,18 @@ class Game
     end
 
     if player_king.check
-      # A king cannot move to a space where an opponent piece may move to.
-      # update_check_king_possible_movements
-      p "#{player_king.name} #{player_king.color} is in check!"
-
-      enemy_list = @chess_board.get_opponent_list_pieces(player.color)
-      enemy_list.each do |piece|
-        possible_list = piece.possible_moves
-        player_king.remove_possible_spaces_where_check(possible_list)
-      end
+      p "#{player_king.color} #{player_king.name} is in check!"
     end
+  end
+
+  def send_update_king_remove_check_spaces(color, king)
+    enemy_list = @chess_board.get_opponent_list_pieces(color)
+    array = []
+    enemy_list.each do |piece|
+      possible_list = piece.possible_moves
+      array.concat(possible_list)
+    end
+    king.remove_possible_spaces_where_check(array)
   end
 
   def send_update_king_check_condition(player, condition)

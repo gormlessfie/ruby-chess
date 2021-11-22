@@ -9,23 +9,13 @@ class GameLogic
     @list_of_black_pieces = @chess_board.get_list_of_pieces('black')
   end
 
-  def king_in_check?(king_color)
-    enemy_list = nil
-    king = nil
-
-    if king_color.match('white')
-      enemy_list = @list_of_black_pieces
-      king = @list_of_white_pieces.select { |piece| piece.name.match('king') }[0]
-    else
-      enemy_list = @list_of_white_pieces
-      king = @list_of_black_pieces.select { |piece| piece.name.match('king') }[0]
-    end
+  def king_in_check?(king)
+    enemy_list = king.color.match('white') ? @list_of_black_pieces : @list_of_white_pieces
 
     enemy_list.each do |opponent_piece|
       list_of_possible_moves = opponent_piece.possible_moves.flatten(1)
       return true if list_of_possible_moves.include?(king.current_pos)
     end
-
     false
   end
 
@@ -38,7 +28,6 @@ class GameLogic
     # Check the king's possible moves.
 
     # If king has no possible moves, then checkmate is declared
-    
     # 
   end
 
