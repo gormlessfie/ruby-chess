@@ -21,6 +21,10 @@ class Player
     end
   end
 
+  def opponent_color
+    @color.match('white') ? 'black' : 'white'
+  end
+
   def input_message(type)
     puts "\n"
     print '       '
