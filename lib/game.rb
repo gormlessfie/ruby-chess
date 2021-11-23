@@ -27,7 +27,11 @@ class Game
 
   def player_turn(player)
     # Update all pieces at the start of every turn
-    update_all_pieces(@chess_board, @chess_board.find_all_pieces)
+    update_all_pieces(@chess_board, @chess_board.get_list_of_pieces('white'))
+    update_all_pieces(@chess_board, @chess_board.get_list_of_pieces('black'))
+
+    update_king_possible_spaces_when_attacked(@chess_board, 'white')
+    update_king_possible_spaces_when_attacked(@chess_board, 'black')
 
     # Create game_logic with current board
     game_logic = GameLogic.new(@chess_board)
@@ -37,7 +41,10 @@ class Game
     update_king_check_condition(game_logic, player_king)
 
     # Check board for checkmate condition
-    game_logic.checkmate?(player_king)
+    if find_valid_pieces_stop_check(@chess_board, player, player_king)&.length&.zero?
+      choose_winner(player.opponent_color)
+      return if @winner
+    end
 
     # Check board for tie condition
     game_logic.determine_tie
@@ -49,16 +56,11 @@ class Game
     # that is within the list of possible move space that blocks movement to
     # the king.
     if game_logic.king_in_check?(player_king)
-      list = find_valid_pieces_stop_check(@chess_board, player, player_king)
-      list.each do |piece|
-        p piece.name
-      end
       simulated_board = simulate_valid_move_when_check(@chess_board, player)
       @chess_board.board = simulated_board.deep_copy
     else
       # Every piece is simulated and updated at the start of every turn.
-      remove_possible_moves_which_cause_check(@chess_board, player)
-
+      # remove_possible_moves_which_cause_check(@chess_board, player)
       player_move_piece(player, @chess_board)
     end
   end
@@ -133,10 +135,10 @@ class Game
     enemy_list = board.get_list_of_pieces(player.opponent_color)
 
     attacking_piece = enemy_list.select do |piece|
-      piece.possible_moves.include?([king.current_pos])
+      piece.possible_moves.flatten(1).include?(king.current_pos)
     end
 
-    return if attacking_piece.nil?
+    return if attacking_piece.empty?
 
     attacking_piece = attacking_piece[0]
 
@@ -144,7 +146,6 @@ class Game
       directional_list.include?([king.current_pos])
     end
 
-    p attacking_piece
 
     list_player_pieces.each do |piece|
       next if piece.possible_moves.empty?
@@ -171,7 +172,7 @@ class Game
     chosen_initial = chosen_piece.current_pos
 
     # clear
-    clear_console
+    # clear_console
 
     # display board
     print_board(board)
@@ -186,7 +187,7 @@ class Game
     chosen_destination = choose_destination(player, chosen_piece, board)
 
     # clear
-    clear_console
+    # clear_console
 
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination)
@@ -238,10 +239,6 @@ class Game
   def update_piece_moves(board, chosen_piece)
     chosen_piece&.update_possible_moves
     update_piece_with_object_collision(board, chosen_piece) if chosen_piece
-
-    if chosen_piece.name.match('king')
-      send_update_king_remove_check_spaces(board, chosen_piece.color, chosen_piece)
-    end
   end
 
   def update_all_pieces(board, list_of_pieces)
@@ -252,19 +249,31 @@ class Game
     game_logic.king_in_check?(king) ? king.update_check(true) : king.update_check(false)
   end
 
+  def update_king_possible_spaces_when_attacked(board, color)
+    list = board.get_list_of_pieces(color)
+    list.each do |chosen_piece|
+      send_update_king_remove_check_spaces(board, chosen_piece.color, chosen_piece) if chosen_piece.name == 'king'
+    end
+  end
+
   def send_update_king_remove_check_spaces(board, color, king)
     enemy_list = board.get_opponent_list_pieces(color)
     array = []
+
     enemy_list.each do |piece|
       possible_list = piece.possible_moves
-      array.concat(possible_list)
+      possible_list.each do |directional_list|
+        directional_list.each do |possible_space|
+          array.push(possible_space)
+        end
+      end
     end
     king.remove_possible_spaces_where_check(array)
   end
 
   def remove_possible_moves_which_cause_check(base_board, player)
     # update(remove) the piece's possible move if moving that piece result in
-    # a check. In action, a piece cannot move if 
+    # a check.
 
     simulated_board = Board.new
     simulated_board.board = base_board.deep_copy
@@ -399,8 +408,9 @@ class Game
   end
 
   def game_end_message(winner)
+    print_board(@chess_board)
     puts %(
-       #{winner.color.upcase} has won!
+       #{winner.upcase} has won!
     )
   end
 end

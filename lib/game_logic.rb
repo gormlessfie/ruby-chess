@@ -22,7 +22,7 @@ class GameLogic
   def checkmate?(king)
     # A checkmate is decided when a king is checked and has no possible moves
     # from any piece without going into another check.
-    return true if king_in_check?(king) && king.possible_moves.empty?
+    return true if king_in_check?(king)
 
     false
   end

@@ -16,8 +16,8 @@ class King < ChessPieces
   end
 
   def remove_possible_spaces_where_check(enemy_piece_possible_moves)
-    @possible_moves = @possible_moves.delete_if do |space|
-      enemy_piece_possible_moves.include?(space)
+    @possible_moves.delete_if do |space|
+      enemy_piece_possible_moves.include?(space.flatten(1))
     end
   end
 

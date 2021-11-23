@@ -76,7 +76,7 @@ class Board
   end
 
   def get_opponent_list_pieces(color)
-    color.match('white') ? get_list_of_pieces('black') : get_list_of_pieces('white')
+    color == 'white' ? get_list_of_pieces('black') : get_list_of_pieces('white')
   end
 
   def find_all_pieces
