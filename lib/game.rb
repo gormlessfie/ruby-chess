@@ -41,7 +41,8 @@ class Game
     update_king_check_condition(game_logic, player_king)
 
     # Check board for checkmate condition
-    if find_valid_pieces_stop_check(@chess_board, player, player_king)&.length&.zero?
+    if find_valid_pieces_stop_check(@chess_board, player, player_king)&.length&.zero? &&
+       game_logic.checkmate?(player_king)
       choose_winner(player.opponent_color)
       return if @winner
     end
@@ -143,14 +144,18 @@ class Game
     attacking_piece = attacking_piece[0]
 
     attacking_piece_directional_list = attacking_piece.possible_moves.select do |directional_list|
-      directional_list.include?([king.current_pos])
+      directional_list.include?(king.current_pos)
     end
 
+    attacking_piece_directional_list.flatten(1)
 
     list_player_pieces.each do |piece|
       next if piece.possible_moves.empty?
 
-      if attacking_piece_directional_list.intersection(piece.possible_moves).length.positive? ||
+      next unless attacking_piece_directional_list
+          .intersection(piece.possible_moves.flatten(1))
+          &.length
+          &.positive? ||
          piece.possible_moves.include?([attacking_piece.current_pos])
         valid_pieces.push(piece)
       end

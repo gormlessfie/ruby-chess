@@ -29,7 +29,7 @@ class SpecialMoves
 
     # Check for empty squares between King and the Rook
     
-    # Check if the squares the king is moving over and onto is not a possible attack space.
+    # Check if the squares the king is moving over is not a possible_attack_move of any piece.
   end
 
   # En passant
