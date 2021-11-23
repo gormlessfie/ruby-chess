@@ -118,11 +118,11 @@ class Board
   end
 
   def promote_pawn(choice, position)
-    space = @board.board[position[0]][position[1]]
+    space = @board[position[0]][position[1]]
     color = space.piece.color
 
     space.piece = case choice
-                  when choice == 'queen'
+                  when 'queen'
                     Queen.new(color, position)
                   when 'rook'
                     Rook.new(color, position)
