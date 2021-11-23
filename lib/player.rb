@@ -45,11 +45,13 @@ class Player
 
   def pawn_explanation
     print '       '
+    puts 'Your pawn can be promoted. Please choose from the following list.'
+    print '       '
     puts 'The valid pieces are: "queen", "rook", "bishop", "knight"'
     puts "\n"
 
     print '       '
-    puts 'Please select the piece you wish to promote the pawn into: '
+    print 'Please select the piece you wish to promote the pawn into: '
   end
 
   def input_message(type)
