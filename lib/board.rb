@@ -66,7 +66,7 @@ class Board
   public
 
   def get_list_pawns(color)
-    @chess_board.board.select do |space|
+    @board.board.select do |space|
       space.piece.name == 'pawn' && space.piece.color == color
     end
   end
@@ -115,6 +115,22 @@ class Board
 
   def make_space_empty(position)
     @board[position[0]][position[1]].piece = nil
+  end
+
+  def promote_pawn(choice, position)
+    space = @board.board[position[0]][position[1]]
+    color = space.piece.color
+
+    space.piece = case choice
+                  when choice == 'queen'
+                    Queen.new(color, position)
+                  when 'rook'
+                    Rook.new(color, position)
+                  when 'bishop'
+                    Bishop.new(color, position)
+                  else
+                    Knight.new(color, position)
+                  end
   end
 
   def deep_copy
