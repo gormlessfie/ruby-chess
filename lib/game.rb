@@ -27,8 +27,7 @@ class Game
 
   def player_turn(player)
     # Update all pieces at the start of every turn
-    update_all_pieces(@chess_board, @chess_board.get_list_of_pieces('white'))
-    update_all_pieces(@chess_board, @chess_board.get_list_of_pieces('black'))
+    update_all_pieces(@chess_board, @chess_board.find_all_pieces)
 
     update_king_possible_spaces_when_attacked(@chess_board, 'white')
     update_king_possible_spaces_when_attacked(@chess_board, 'black')
