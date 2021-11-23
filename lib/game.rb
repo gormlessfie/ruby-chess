@@ -107,13 +107,8 @@ class Game
       king = simulated_board.get_king(player.color)
       valid_pieces = find_valid_pieces_stop_check(base_board, player, king)
 
-      print '       '
-      print 'The valid pieces are: '
-      valid_pieces.each do |piece|
-        print "#{piece.name} at #{piece.current_pos}, "
-      end
-
-      puts "\n"
+      # Print valid pieces
+      print_valid_pieces(valid_pieces)
 
       # perform the move on the simulated board
       player_move_piece(player, simulated_board)
@@ -372,6 +367,16 @@ class Game
 
   def print_board(board)
     board.display_board
+  end
+
+  def print_valid_pieces(list)
+    print '       '
+    print 'The valid pieces are: '
+    list.each do |piece|
+      print "#{piece.name} at #{piece.current_pos}, "
+    end
+
+    puts "\n"
   end
 
   def error_message_invalid_space(board, space, position)
