@@ -65,6 +65,12 @@ class Board
 
   public
 
+  def get_list_pawns(color)
+    @chess_board.board.select do |space|
+      space.piece.name == 'pawn' && space.piece.color == color
+    end
+  end
+
   def get_list_of_pieces(color)
     list = []
     @board.each do |row|
