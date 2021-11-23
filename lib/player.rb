@@ -33,7 +33,7 @@ class Player
       input = gets.chomp
       puts "\n"
 
-      return input if valid_choices.include?(input)
+      return input.downcase if valid_choices.include?(input)
 
       print '       '
       puts "The input #{input} is invalid. It must be one of the pieces listed."
@@ -45,8 +45,11 @@ class Player
 
   def pawn_explanation
     print '       '
+    puts 'The valid pieces are: "queen", "rook", "bishop", "knight"'
+    puts "\n"
+
+    print '       '
     puts 'Please select the piece you wish to promote the pawn into: '
-    puts '  "queen", "rook", "bishop", "knight"'
   end
 
   def input_message(type)
