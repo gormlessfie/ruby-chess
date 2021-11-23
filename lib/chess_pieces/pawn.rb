@@ -15,6 +15,7 @@ class Pawn < ChessPieces
     @first_turn = true
     @pawn_attack_key_white = [[-1, -1], [-1, 1]]
     @pawn_attack_key_black = [[1, -1], [1, 1]]
+    @pawn_promotion = false
   end
 
   def add_possible_attack_spaces(list)
