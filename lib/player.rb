@@ -13,7 +13,8 @@ class Player
       input_message(type)
       input = gets.chomp
       puts "\n"
-      return input.split(',').map(&:to_i) if input.match(/\d,\d/)
+
+      return input.split(',').map(&:to_i) if input.match(/^[0-7]{1},[0-7]{1}$/)
 
       print '       '
       puts "The input #{input} is invalid. It must be '#y,#x'"
