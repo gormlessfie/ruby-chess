@@ -96,12 +96,25 @@ class Game
   def simulate_valid_move_when_check(base_board, player)
     simulated_board = nil
     loop do
+      print '       '
       puts 'You must stop the check. Please select a unit that can move to ' \
       'protect your king!'
 
       # create a new board object to simulate the move
       simulated_board = Board.new
       simulated_board.board = base_board.deep_copy
+
+      # Find valid pieces that can be moved.
+      king = simulated_board.get_king(player.color)
+      valid_pieces = find_valid_pieces_stop_check(base_board, player, king)
+
+      print '       '
+      print 'The valid pieces are: '
+      valid_pieces.each do |piece|
+        print "#{piece.name} at #{piece.current_pos}, "
+      end
+
+      puts "\n"
 
       # perform the move on the simulated board
       player_move_piece(player, simulated_board)
@@ -127,7 +140,6 @@ class Game
     # The king is also a valid piece, given that the king has possible moves.
 
     valid_pieces = []
-    valid_pieces.push(king) unless king.possible_moves.empty?
 
     # Get the list of the player's pieces
     list_player_pieces = board.get_list_of_pieces(player.color)
@@ -147,18 +159,16 @@ class Game
       directional_list.include?(king.current_pos)
     end
 
-    attacking_piece_directional_list.flatten(1)
+    attacking_piece_directional_list = attacking_piece_directional_list.flatten(1)
 
     list_player_pieces.each do |piece|
       next if piece.possible_moves.empty?
 
-      next unless attacking_piece_directional_list
-          .intersection(piece.possible_moves.flatten(1))
-          &.length
-          &.positive? ||
-         piece.possible_moves.include?([attacking_piece.current_pos])
-        valid_pieces.push(piece)
-      end
+      next unless piece_stop_check?(attacking_piece_directional_list,
+                                    attacking_piece,
+                                    piece)
+
+      valid_pieces.push(piece)
     end
     # The attacking piece is the piece with the possible_moves list that can move on the king.
     # A piece is added to the valid list if the piece's possible_moves list has
@@ -166,6 +176,12 @@ class Game
     # the attacking_piece possible_move.
 
     valid_pieces
+  end
+
+  def piece_stop_check?(attacking_piece_list, attacking_piece, piece)
+    attacking_piece_list
+      .intersection(piece.possible_moves.flatten(1))&.length&.positive? ||
+      piece.possible_moves.include?([attacking_piece.current_pos])
   end
 
   def player_move_piece(player, board)
