@@ -26,6 +26,29 @@ class Player
     @color.match('white') ? 'black' : 'white'
   end
 
+  def player_pawn_promotion_choice
+    valid_choices = %w[queen rook bishop knight]
+    loop do
+      pawn_explanation
+      input = gets.chomp
+      puts "\n"
+
+      return input if valid_choices.include?(input)
+
+      print '       '
+      puts "The input #{input} is invalid. It must be one of the pieces listed."
+      puts "\n"
+    end
+  end
+
+  private
+
+  def pawn_explanation
+    print '       '
+    puts 'Please select the piece you wish to promote the pawn into: '
+    puts '  "queen", "rook", "bishop", "knight"'
+  end
+
   def input_message(type)
     puts "\n"
     print '       '
@@ -35,21 +58,6 @@ class Player
       print 'for the piece that you wish to move: '
     else
       print 'Please select where to move the piece: '
-    end
-  end
-
-  def player_pawn_promotion_choice
-    valid_choices = %w[queen rook bishop knight]
-    loop do
-      print '       '
-      puts 'Please select the piece you wish to promote the pawn into: '
-      puts '  "queen", "rook", "bishop", "knight"'
-
-      return input if valid_choices.include?(input)
-
-      print '       '
-      puts "The input #{input} is invalid. It must be one of the pieces listed."
-      puts "\n"
     end
   end
 end
