@@ -51,4 +51,8 @@ class Pawn < ChessPieces
     black = "\u265F"
     super(black, white)
   end
+
+  def update_pawn_promotion
+    @pawn_promotion = true
+  end
 end
