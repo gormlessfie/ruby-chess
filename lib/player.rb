@@ -37,4 +37,19 @@ class Player
       print 'Please select where to move the piece: '
     end
   end
+
+  def player_pawn_promotion_choice
+    valid_choices = %w[queen rook bishop knight]
+    loop do
+      print '       '
+      puts 'Please select the piece you wish to promote the pawn into: '
+      puts '  "queen", "rook", "bishop", "knight"'
+
+      return input if valid_choices.include?(input)
+
+      print '       '
+      puts "The input #{input} is invalid. It must be one of the pieces listed."
+      puts "\n"
+    end
+  end
 end
