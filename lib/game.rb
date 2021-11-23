@@ -49,6 +49,10 @@ class Game
     # that is within the list of possible move space that blocks movement to
     # the king.
     if game_logic.king_in_check?(player_king)
+      list = find_valid_pieces_stop_check(@chess_board, player, player_king)
+      list.each do |piece|
+        p piece.name
+      end
       simulated_board = simulate_valid_move_when_check(@chess_board, player)
       @chess_board.board = simulated_board.deep_copy
     else
@@ -120,16 +124,13 @@ class Game
     # The king is also a valid piece, given that the king has possible moves.
 
     valid_pieces = []
-    valid_pieces.push(king)
+    valid_pieces.push(king) unless king.possible_moves.empty?
+
     # Get the list of the player's pieces
     list_player_pieces = board.get_list_of_pieces(player.color)
 
-    p list_player_pieces
-
     # Get the attacking piece.
     enemy_list = board.get_list_of_pieces(player.opponent_color)
-
-    p enemy_list
 
     attacking_piece = enemy_list.select do |piece|
       piece.possible_moves.include?([king.current_pos])
@@ -139,12 +140,16 @@ class Game
 
     attacking_piece = attacking_piece[0]
 
+    attacking_piece_directional_list = attacking_piece.possible_moves.select do |directional_list|
+      directional_list.include?([king.current_pos])
+    end
+
     p attacking_piece
 
     list_player_pieces.each do |piece|
       next if piece.possible_moves.empty?
 
-      if attacking_piece.possible_moves.intersection(piece.possible_moves).length.positive? ||
+      if attacking_piece_directional_list.intersection(piece.possible_moves).length.positive? ||
          piece.possible_moves.include?([attacking_piece.current_pos])
         valid_pieces.push(piece)
       end
