@@ -66,8 +66,8 @@ class Board
   public
 
   def get_list_pawns(color)
-    @board.board.select do |space|
-      space.piece.name == 'pawn' && space.piece.color == color
+    get_list_of_pieces(color).select do |piece|
+      piece.name == 'pawn' && piece.color == color
     end
   end
 
