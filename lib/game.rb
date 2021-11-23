@@ -4,6 +4,7 @@ require './lib/board'
 require './lib/player'
 require './lib/game_logic'
 require './lib/unit_collision'
+require './lib/special_moves'
 
 require 'pry-byebug'
 
@@ -206,6 +207,9 @@ class Game
 
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination)
+
+    # Check for pawn promotion condition if chosen_piece is a pawn
+    pawn_promotion_procedure(chosen_piece, player, board) if chosen_piece.name == 'pawn'
   end
 
   def choose_destination(player, chosen_piece, board)
@@ -352,6 +356,25 @@ class Game
         end
       end
     end
+  end
+
+  def pawn_promotion_procedure(chosen_piece, player, board)
+    # Create SpecialMoves object to handle pawn promotion.
+    pawn_promotion = SpecialMoves.new(board)
+
+    # Update pawn promotion status to check if it is on rank 0 or 7
+    pawn_promotion.update_pawn_promotion_status(player.color)
+
+    # If the pawn's promotion staus is true
+    return unless chosen_piece.pawn_promotion
+
+    pawn_board_position = chosen_piece.current_pos
+
+    # Get player choice of piece for promotion
+    choice = player.player_pawn_promotion_choice
+
+    # Send message to board to switch out the pawn w/ said piece.
+    board.promote_pawn(choice, pawn_board_position)
   end
 
   def print_chosen_piece(piece)
