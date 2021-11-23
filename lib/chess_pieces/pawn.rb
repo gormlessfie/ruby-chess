@@ -6,7 +6,8 @@ require './lib/chess_pieces/chess_pieces'
 # and 1 space afterwards. This piece can attack diagonally, if there is a
 # black piece 1 space diagonal from it in front.
 class Pawn < ChessPieces
-  attr_reader :first_turn, :pawn_attack_key_white, :pawn_attack_key_black
+  attr_reader :first_turn, :pawn_attack_key_white, :pawn_attack_key_black,
+              :pawn_promotion
 
   def initialize(color, index)
     white_key = create_white_key
