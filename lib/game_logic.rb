@@ -10,7 +10,7 @@ class GameLogic
   end
 
   def king_in_check?(king)
-    enemy_list = king.color.match('white') ? @list_of_black_pieces : @list_of_white_pieces
+    enemy_list = king.color == 'white' ? @list_of_black_pieces : @list_of_white_pieces
 
     enemy_list.each do |opponent_piece|
       list_of_possible_moves = opponent_piece.possible_moves.flatten(1)

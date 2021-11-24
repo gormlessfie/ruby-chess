@@ -57,10 +57,14 @@ class Game
     # that is within the list of possible move space that blocks movement to
     # the king.
     if game_logic.king_in_check?(player_king)
+      list = remove_possible_moves_which_cause_check2(@chess_board, player)
+      list.each { |piece| p piece.name }
       simulated_board = simulate_valid_move_when_check(@chess_board, player)
       @chess_board.board = simulated_board.deep_copy
     else
       # Every piece is simulated and updated at the start of every turn.
+      list = remove_possible_moves_which_cause_check2(@chess_board, player)
+      list.each { |piece| p piece.name }
       check_self_check_player_turn(@chess_board, player)
     end
   end
@@ -380,6 +384,54 @@ class Game
         end
       end
     end
+  end
+
+  def remove_possible_moves_which_cause_check2(base_board, player)
+    valid_pieces_list = []
+
+    master_board = Board.new
+    master_board.board = base_board.deep_copy
+
+    player_pieces = master_board
+                    .get_list_of_pieces(player.color)
+                    .select { |piece| true unless piece.possible_moves.empty? }
+
+    player_pieces.each do |sim_piece|
+      initial = sim_piece.current_pos
+
+      sim_board = Board.new
+      sim_board.board = master_board.deep_copy
+
+      valid_direction = []
+
+      sim_piece.possible_moves.each do |directional_list|
+        directional_board = Board.new
+        directional_board.board = sim_board.deep_copy
+
+        destination = directional_list[0]
+        move_piece_complete(directional_board, sim_piece, initial, destination)
+        update_all_pieces(directional_board, directional_board.find_all_pieces)
+
+        directional_logic = GameLogic.new(directional_board)
+        directional_king = directional_board.get_king(player.color)
+
+        update_king_check_condition(directional_logic, directional_king)
+
+        directional_king.check ? valid_direction.push(false) : valid_direction.push(true)
+      end
+
+      sim_board.get_list_of_pieces(player.color).each do |player_piece|
+        next unless player_piece.current_pos == initial
+
+        valid_direction.each do |causes_check|
+          # If false, remove the array
+          sim_piece.possible_moves.delete_if { !causes_check }
+        end
+      end
+      valid_pieces_list.push(sim_piece) unless sim_piece.possible_moves.empty?
+    end
+
+    valid_pieces_list
   end
 
   def pawn_promotion_procedure(chosen_piece, player, board)
