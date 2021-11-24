@@ -106,4 +106,15 @@ class UnitCollision
   def piece_pawn?(piece)
     piece.name == 'pawn'
   end
+
+  def calc_pawn_potential_attack(moving_piece, space)
+    pawn_attack_key = det_pawn_att_key(moving_piece)
+    pos = moving_piece.current_pos
+
+    space_pos = [pos[0] + pawn_attack_key[space][0],
+                 pos[1] + pawn_attack_key[space][1]]
+    return nil unless space_pos.all? { |value| value.between?(0, 7) }
+
+    space_pos
+  end
 end

@@ -9,11 +9,14 @@ class Pawn < ChessPieces
   attr_reader :first_turn, :pawn_attack_key_white, :pawn_attack_key_black,
               :pawn_promotion
 
+  attr_accessor :potential_attack_spaces
+
   def initialize(color, index)
     white_key = create_white_key
     black_key = create_black_key
     super('pawn', color, index, white_key, black_key)
     @first_turn = true
+    @potential_attack_spaces = []
     @pawn_attack_key_white = [[-1, -1], [-1, 1]]
     @pawn_attack_key_black = [[1, -1], [1, 1]]
     @pawn_promotion = false

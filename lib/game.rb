@@ -312,12 +312,26 @@ class Game
     enemy_list.each do |piece|
       possible_list = piece.possible_moves
       possible_list.each do |directional_list|
+        # This does not add pawn movement into the list. Pawn attack added later.
+        next if piece.name == 'pawn'
+
         directional_list.each do |possible_space|
           array.push(possible_space)
         end
       end
+
+      # Adds the pawn attack_spaces
+      next unless piece.name == 'pawn'
+
+      # push the attack spaces of the pawn, not the movement direction
+      pawn_collision = UnitCollision.new(board)
+      left = pawn_collision.calc_pawn_potential_attack(piece, 0)
+      right = pawn_collision.calc_pawn_potential_attack(piece, 1)
+
+      array.push(left) unless left.nil?
+      array.push(right) unless right.nil?
     end
-    king.remove_possible_spaces_where_check(array)
+    king.remove_possible_spaces_where_check(array.uniq)
   end
 
   def valid_pieces_for_player(base_board, player)
