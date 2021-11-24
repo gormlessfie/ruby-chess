@@ -313,6 +313,7 @@ class Game
     king.remove_possible_spaces_where_check(array)
   end
 
+  # Broken method, delete when complete.
   def remove_possible_moves_which_cause_check(base_board, player)
     # update(remove) the piece's possible move if moving that piece result in
     # a check.
