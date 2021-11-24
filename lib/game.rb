@@ -47,6 +47,8 @@ class Game
       return if @winner
     end
 
+    valid_pieces = valid_pieces_for_player(@chess_board, player)
+
     # Check board for tie condition
     game_logic.determine_tie
 
@@ -57,16 +59,10 @@ class Game
     # that is within the list of possible move space that blocks movement to
     # the king.
     if game_logic.king_in_check?(player_king)
-      list = valid_pieces_for_player(@chess_board, player)
-      list.each { |piece| p piece.name }
-
       simulated_board = simulate_valid_move_when_check(@chess_board, player)
       @chess_board.board = simulated_board.deep_copy
     else
       # Every piece is simulated and updated at the start of every turn.
-      list = valid_pieces_for_player(@chess_board, player)
-      list.each { |piece| p piece.name }
-
       check_self_check_player_turn(@chess_board, player)
     end
   end
@@ -317,75 +313,6 @@ class Game
       end
     end
     king.remove_possible_spaces_where_check(array)
-  end
-
-  # Broken method, delete when complete.
-  def remove_possible_moves_which_cause_check(base_board, player)
-    # update(remove) the piece's possible move if moving that piece result in
-    # a check.
-
-    simulated_board = Board.new
-    simulated_board.board = base_board.deep_copy
-
-    # Get list of simulated pieces
-    list_of_pieces = simulated_board.find_all_pieces
-
-    list_of_pieces.each do |piece|
-      piece_board = Board.new
-      piece_board.board = simulated_board.deep_copy
-
-      # Get the piece initial position
-      initial = piece.current_pos
-
-      # Get the destination which is the first possible move in a direction
-      possible_list = piece.possible_moves
-
-      # Break if the piece has no possible moves
-      next if possible_list.empty?
-
-      # valid_direction is an array of true or false.
-      # This list tells you which direction the piece can go in without causing a check.
-      valid_direction = []
-
-      # For every direction the piece can go, each [], simulate a move in that direction
-      possible_list.each do |directional_list|
-        # Create a simulated board for each direction
-        direction_board = Board.new
-        direction_board.board = piece_board.deep_copy
-
-        # Find the destination of each direction
-        destination = directional_list[0]
-
-        # perform the move in the direction
-        move_piece_complete(direction_board, piece, initial, destination)
-
-        # Update the possible moves of the attacking piece.
-        update_all_pieces(direction_board, direction_board.find_all_pieces)
-
-        # create a new game_logic
-        direction_logic = GameLogic.new(direction_board)
-        direction_king = direction_board.get_king(player.color)
-
-        update_king_check_condition(direction_logic, direction_king)
-
-        # If the move causes the king to be in check, then valid direction is false
-        if direction_logic.king_in_check?(direction_king)
-          valid_direction.push(false)
-        else
-          valid_direction.push(true)
-        end
-      end
-      # Use the valid_direction t/f list to remove the direction_moves_list from the piece
-
-      @chess_board.find_all_pieces.each do |base_piece|
-        next unless base_piece.current_pos == initial
-
-        valid_direction.each do |causes_check|
-          # If false, remove the array
-          base_piece.possible_moves.delete_if { !causes_check }
-        end
-      end
-    end
   end
 
   def valid_pieces_for_player(base_board, player)
