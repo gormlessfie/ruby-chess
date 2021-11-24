@@ -48,12 +48,15 @@ class Game
     end
 
     valid_pieces = valid_pieces_for_player(@chess_board, player)
-    valid_pieces.each do |piece|
-      p piece.name
-    end
+
     # Check board for stalemate condition
     if game_logic.determine_stalemate(valid_pieces, player_king)
       choose_winner('stalemate')
+      return if @winner
+    end
+
+    if game_logic.determine_draw_turns(@turn_counter)
+      choose_winner('draw')
       return if @winner
     end
 

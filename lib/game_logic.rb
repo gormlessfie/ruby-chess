@@ -35,4 +35,8 @@ class GameLogic
 
     false
   end
+
+  def determine_draw_turns(turns)
+    num_pieces = @board.find_all_pieces.length
+  end
 end
