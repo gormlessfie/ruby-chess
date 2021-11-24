@@ -13,6 +13,7 @@ class King < ChessPieces
     super('king', color, index, white_key, black_key)
     @first_turn = true
     @check = false
+    @castling = true
   end
 
   def remove_possible_spaces_where_check(enemy_piece_possible_moves)

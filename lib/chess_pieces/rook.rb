@@ -11,6 +11,7 @@ class Rook < ChessPieces
     black_key = create_key
     super('rook', color, index, white_key, black_key)
     @first_turn = true
+    @castling = true
   end
 
   def create_key
