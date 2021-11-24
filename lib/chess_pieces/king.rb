@@ -5,7 +5,7 @@ require './lib/chess_pieces/chess_pieces'
 # A king chess piece. Can move 1 space in any direction. Loses if checkmated
 # Can be blocked.
 class King < ChessPieces
-  attr_reader :first_turn, :check
+  attr_reader :first_turn, :check, :castling
 
   def initialize(color, index)
     white_key = create_key
@@ -38,5 +38,9 @@ class King < ChessPieces
 
   def update_check(condition)
     @check = condition
+  end
+
+  def update_castling_status_false
+    @castling = false
   end
 end

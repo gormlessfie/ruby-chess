@@ -4,7 +4,7 @@ require './lib/chess_pieces/chess_pieces'
 
 # A rook chess piece. Moves vertically or horizontally, no limit. Can be blocked.
 class Rook < ChessPieces
-  attr_reader :first_turn
+  attr_reader :first_turn, :castling
 
   def initialize(color, index)
     white_key = create_key
@@ -49,5 +49,9 @@ class Rook < ChessPieces
 
   def update_first_turn_false
     @first_turn = false
+  end
+
+  def update_castling_status_false
+    @castling = false
   end
 end
