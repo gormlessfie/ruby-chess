@@ -51,6 +51,8 @@ class GameLogic
   # Check the pieces_list of each player and see if they match any of these combinations.
   # Must check for both sides, ie King Knight vs King && King vs King Knight
   def determine_draw_turns(turns)
-    num_pieces = @board.find_all_pieces.length
+    num_pieces = @chess_board.find_all_pieces.length
+
+    false
   end
 end
