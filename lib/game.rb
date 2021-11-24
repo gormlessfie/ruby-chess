@@ -61,8 +61,7 @@ class Game
       @chess_board.board = simulated_board.deep_copy
     else
       # Every piece is simulated and updated at the start of every turn.
-      # remove_possible_moves_which_cause_check(@chess_board, player)
-      player_move_piece(player, @chess_board)
+      check_self_check_player_turn(@chess_board, player)
     end
   end
 
@@ -171,6 +170,30 @@ class Game
     # the attacking_piece possible_move.
 
     valid_pieces
+  end
+
+  def check_self_check_player_turn(board, player)
+    loop do
+      # Make a dupe of the board
+      safe_board = board.deep_copy
+
+      # Do move
+      player_move_piece(player, board)
+
+      # Update board with new info
+      update_all_pieces(board, board.find_all_pieces)
+      update_king_possible_spaces_when_attacked(board, player.color)
+
+      # check player king
+      check_self_logic = GameLogic.new(board)
+      self_king = board.get_king(player.color)
+
+      break unless check_self_logic.king_in_check?(self_king)
+
+      print_error_self_check
+      # if check -> copy dupe over current_board
+      board.board = safe_board
+    end
   end
 
   def piece_stop_check?(attacking_piece_list, attacking_piece, piece)
@@ -381,6 +404,16 @@ class Game
     print '       '
     puts "You have chosen a #{piece.color} #{piece.name} at " \
          "#{piece.current_pos}."
+  end
+
+  def print_error_self_check
+    print '       '
+    puts 'This is an invalid move. You must move a piece that will not cause a '
+
+    print '       '
+    puts 'check onto your own king.'
+
+    puts "\n"
   end
 
   def print_possible_moves_piece(piece)
