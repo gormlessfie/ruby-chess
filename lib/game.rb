@@ -40,6 +40,12 @@ class Game
     # Check & update player king check
     update_king_check_condition(game_logic, player_king)
 
+    # Check board to see if castling is possible and update rook and king for castling.
+    castling_procedure(@chess_board, player)
+
+    # Get list of valid pieces that the player can move
+    valid_pieces = valid_pieces_for_player(@chess_board, player)
+
     # Check board for checkmate condition
     if find_valid_pieces_stop_check(@chess_board, player, player_king)&.length&.zero? &&
        game_logic.checkmate?(player_king)
@@ -47,14 +53,13 @@ class Game
       return if @winner
     end
 
-    valid_pieces = valid_pieces_for_player(@chess_board, player)
-
     # Check board for stalemate condition
     if game_logic.determine_stalemate(valid_pieces, player_king)
       choose_winner('stalemate')
       return if @winner
     end
 
+    # Check board for draw condition
     if game_logic.determine_draw_turns(@turn_counter)
       choose_winner('draw')
       return if @winner
@@ -309,6 +314,11 @@ class Game
   end
 
   def send_update_king_remove_check_spaces(board, color, king)
+    array = find_enemy_possible_moves(board, color)
+    king.remove_possible_spaces_where_check(array.uniq)
+  end
+
+  def find_enemy_possible_moves(board, color)
     enemy_list = board.get_opponent_list_pieces(color)
     array = []
 
@@ -334,7 +344,7 @@ class Game
       array.push(left) unless left.nil?
       array.push(right) unless right.nil?
     end
-    king.remove_possible_spaces_where_check(array.uniq)
+    array
   end
 
   def valid_pieces_for_player(base_board, player)
@@ -385,12 +395,17 @@ class Game
     valid_pieces_list
   end
 
+  def castling_procedure(board, player)
+    p @chess_board.get_rook(player.color, 'left')
+    p @chess_board.get_rook(player.color, 'right')
+  end
+
   def pawn_promotion_procedure(chosen_piece, player, board)
     # Create SpecialMoves object to handle pawn promotion.
-    pawn_promotion = SpecialMoves.new(board)
+    pawn_promotion = SpecialMoves.new(board, player)
 
     # Update pawn promotion status to check if it is on rank 0 or 7
-    pawn_promotion.update_pawn_promotion_status(player.color)
+    pawn_promotion.update_pawn_promotion_status
 
     # If the pawn's promotion staus is true
     return unless chosen_piece.pawn_promotion
