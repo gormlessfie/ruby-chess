@@ -94,6 +94,13 @@ class Board
     king[0]
   end
 
+  def get_rook(color, which_rook)
+    pieces_list = get_list_of_pieces(color)
+    rook_list = pieces_list.select { |piece| piece.name == 'rook' }
+
+    which_rook == 'left' ? rook_list[0] : rook_list[1]
+  end
+
   def display_board
     print '         '
     puts ' 0  1  2  3  4  5  6  7 '
