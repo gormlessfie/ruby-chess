@@ -27,7 +27,12 @@ class GameLogic
     false
   end
 
-  def determine_tie
-    # A tie is decided when...
+  def determine_stalemate(valid_list, king)
+    # A stalemate is decided when...
+    # 1 King is not in check
+    # 2 No valid pieces.
+    return true if valid_list.empty? && !king.check
+
+    false
   end
 end

@@ -49,8 +49,11 @@ class Game
 
     valid_pieces = valid_pieces_for_player(@chess_board, player)
 
-    # Check board for tie condition
-    game_logic.determine_tie
+    # Check board for stalemate condition
+    if game_logic.determine_stalemate(valid_pieces, player_king)
+      choose_winner('stalemate')
+      return if @winner
+    end
 
     # If player is checked, must either move king or a piece that stops the check.
     # A piece that stops the check is one that makes the space the king is on no longer
@@ -474,6 +477,11 @@ class Game
     print_board(@chess_board)
     puts %(
        #{winner.upcase} has won!
+    )
+    return unless winner == 'stalemate'
+
+    puts %(
+      The game was a #{winner.upcase}.
     )
   end
 end
