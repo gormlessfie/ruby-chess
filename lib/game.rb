@@ -57,14 +57,16 @@ class Game
     # that is within the list of possible move space that blocks movement to
     # the king.
     if game_logic.king_in_check?(player_king)
-      list = remove_possible_moves_which_cause_check2(@chess_board, player)
+      list = valid_pieces_for_player(@chess_board, player)
       list.each { |piece| p piece.name }
+
       simulated_board = simulate_valid_move_when_check(@chess_board, player)
       @chess_board.board = simulated_board.deep_copy
     else
       # Every piece is simulated and updated at the start of every turn.
-      list = remove_possible_moves_which_cause_check2(@chess_board, player)
+      list = valid_pieces_for_player(@chess_board, player)
       list.each { |piece| p piece.name }
+
       check_self_check_player_turn(@chess_board, player)
     end
   end
@@ -386,7 +388,7 @@ class Game
     end
   end
 
-  def remove_possible_moves_which_cause_check2(base_board, player)
+  def valid_pieces_for_player(base_board, player)
     valid_pieces_list = []
 
     master_board = Board.new
