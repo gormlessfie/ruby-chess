@@ -20,8 +20,20 @@ class UnitCollision
       possible_spaces_list.each do |next_space|
         next unless piece_in_space_exist?(next_space)
 
-        problem_spaces.push(next_space)
-        break
+        if moving_piece.name == 'pawn' && moving_piece.first_turn
+          second_space = next_space
+          second_space[0] = if moving_piece.color == 'white'
+                              second_space[0] - 1
+                            else
+                              second_space[0] + 1
+                            end
+
+          problem_spaces.push(next_space)
+          problem_spaces.push(second_space)
+        else
+          problem_spaces.push(next_space)
+          break
+        end
       end
     end
     problem_spaces
@@ -77,9 +89,11 @@ class UnitCollision
   end
 
   def piece_in_space_exist?(index)
-    return true unless @collision_board.board[index[0]][index[1]].piece.nil?
+    # Return false if there is no piece in the space.
+    # Return true if there is a piece in the space.
+    return false if @collision_board.board[index[0]][index[1]].piece.nil?
 
-    false
+    true
   end
 
   def pieces_different_color?(piece_one, piece_two)
