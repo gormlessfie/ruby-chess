@@ -36,6 +36,20 @@ class GameLogic
     false
   end
 
+  # There are 3 types of draws that can occur:
+
+  # 3 Rep rule: If the same board occurs three times, then a draw is called
+  # Keep a snapshot of what the board is like with an array by pushing each space into the array.
+  # If there are three sub-arrays that are identical in the array, then 3 rep rule is called.
+
+  # 50 turn rule: If 50 turns has passed without no captures made and no pawns moved. A draw is called.
+  # Keep a count of the moves performed in total, if the last 50 does not contain a pawn move.
+  # Reset counter if the length of the number of pieces decrease.
+
+  # Insufficent materials: If the players do not have enough pieces to perform a checkmate, a draw is called.
+  # King Knight vs King | King vs King | King Bishop vs King | King Bishop same space color vs King Bishop same space color
+  # Check the pieces_list of each player and see if they match any of these combinations.
+  # Must check for both sides, ie King Knight vs King && King vs King Knight
   def determine_draw_turns(turns)
     num_pieces = @board.find_all_pieces.length
   end
