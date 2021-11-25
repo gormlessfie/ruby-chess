@@ -4,7 +4,7 @@ require 'date'
 
 # This saves and loads the game. This will save the current state of the board.
 class SaveLoader
-  def initialize(game)
+  def initialize(game, winner, turn_counter, current_turn)
     @game = game
   end
 
@@ -19,7 +19,7 @@ class SaveLoader
     File.open(user_save_name_choice, 'w') { |file| file.write(serialized_object) }
 
     print '       '
-    puts "Save complete! You can exit at any time."
+    puts 'Save complete! You can exit at any time.'
   end
 
   def load_game

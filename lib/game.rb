@@ -5,6 +5,7 @@ require './lib/player'
 require './lib/game_logic'
 require './lib/unit_collision'
 require './lib/special_moves'
+require './lib/save_loader'
 
 require 'pry-byebug'
 
@@ -16,6 +17,7 @@ class Game
     @black_player = Player.new('black')
     @winner = nil
     @turn_counter = 0
+    @current_turn = nil
   end
 
   def game_round
@@ -27,6 +29,7 @@ class Game
   end
 
   def player_turn(player)
+    update_current_turn(player)
     # Update all pieces at the start of every turn
     update_all_pieces(@chess_board, @chess_board.find_all_pieces)
 
@@ -83,6 +86,14 @@ class Game
   def setup_piece(board, player)
     loop do
       chosen_initial = player.player_input('select')
+      exit if chosen_initial.match(/Q/i)
+
+      if chosen_initial.match(/S/i)
+        saver = SaveLoader.new(self)
+        saver.setup_save_folder
+        saver.save_game
+      end
+
       chosen_space = board.board[chosen_initial[0]][chosen_initial[1]]
 
       return chosen_space.piece if chosen_space.piece &&
@@ -317,6 +328,10 @@ class Game
     end
   end
 
+  def update_current_turn(player)
+    @current_turn = player
+  end
+
   def send_update_king_remove_check_spaces(board, color, king)
     array = find_enemy_possible_moves(board, color)
     king.remove_possible_spaces_where_check(array.uniq)
@@ -548,5 +563,9 @@ class Game
     puts %(
       The game was a #{winner.upcase}.
     )
+  end
+
+  def save_current_game(game)
+
   end
 end

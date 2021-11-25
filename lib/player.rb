@@ -14,6 +14,7 @@ class Player
       input = gets.chomp
       puts "\n"
 
+      return input if input.match(/^[QS]{1}$/i)
       return input.split(',').map(&:to_i) if input.match(/^[0-7]{1},[0-7]{1}$/)
 
       print '       '
