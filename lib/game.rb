@@ -29,7 +29,7 @@ class Game
   end
 
   def player_turn(player)
-    update_current_turn(player)
+    update_current_turn(player.color)
     # Update all pieces at the start of every turn
     update_all_pieces(@chess_board, @chess_board.find_all_pieces)
 
@@ -85,9 +85,11 @@ class Game
 
   def setup_piece(board, player)
     loop do
-      chosen_initial = player.player_input('select')
-      chosen_initial = player.player_input('select') if game_options(chosen_initial)
-
+      chosen_initial = nil
+      loop do
+        chosen_initial = game_options(board, player.player_input('select'))
+        break if chosen_initial.is_a?(Array)
+      end
       chosen_space = board.board[chosen_initial[0]][chosen_initial[1]]
 
       return chosen_space.piece if chosen_space.piece &&
@@ -231,7 +233,7 @@ class Game
     chosen_initial = chosen_piece.current_pos
 
     # clear
-    # clear_console
+    clear_console
 
     # display board
     print_board(board)
@@ -246,7 +248,7 @@ class Game
     chosen_destination = choose_destination(player, chosen_piece, board)
 
     # clear
-    # clear_console
+    clear_console
 
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination)
@@ -524,6 +526,12 @@ class Game
     game_end_message(@winner)
   end
 
+  def game_continue
+    player_turn(@black_player) if @current_turn == 'black' && @winner.nil?
+    game_round
+    game_end_message(@winner)
+  end
+
   def increment_turn_counter
     @turn_counter += 1
   end
@@ -559,21 +567,27 @@ class Game
     )
   end
 
-  def save_current_game
-    saver = SaveLoader.new(self)
-    saver.setup_save_folder
-    saver.save_game
+  def save_current_game(board)
+    saver = SaveLoader.new
+    clear_console
+    saver.save_game(self)
+    print_board(board)
   end
 
-  def game_options(input)
-    return false if input.is_a?(Array)
+  def load_save_game(loaded_save)
+    @chess_board = loaded_save.instance_variable_get(:@chess_board)
+    @winner = loaded_save.instance_variable_get(:@winner)
+    @turn_counter = loaded_save.instance_variable_get(:@turn_counter)
+    @current_turn = loaded_save.instance_variable_get(:@current_turn)
+
+    game_continue
+  end
+
+  def game_options(board, input)
+    return input if input.is_a?(Array)
 
     exit if input.match(/Q/i)
-    if input.match(/S/i)
-      save_current_game
-      return true
-    end
-
-    false
+    save_current_game(board) if input.match(/S/i)
+    nil
   end
 end
