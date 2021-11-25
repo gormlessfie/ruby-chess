@@ -1,19 +1,16 @@
 # frozen_string_literal: true
 
-require 'date'
-
 # This saves and loads the game. This will save the current state of the board.
 class SaveLoader
-  def initialize(game)
-    @game = game
+  def initialize
   end
 
   def setup_save_folder
     create_save_dir
   end
 
-  def save_game
-    serialized_object = Marshal.dump(@game)
+  def save_game(game)
+    serialized_object = Marshal.dump(game)
     Dir.chdir('saves')
 
     File.open(user_save_name_choice, 'w') { |file| file.write(serialized_object) }
