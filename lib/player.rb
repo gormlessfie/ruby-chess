@@ -59,6 +59,9 @@ class Player
     puts "\n"
     print '       '
     if type == 'select'
+      print '       '
+      puts 'Input [Q] to quit. Input [S] to save.'
+      print '       '
       puts "It is #{@color}'s turn. Please input a selection in '#y,#x' form"
       print '       '
       print 'for the piece that you wish to move: '
