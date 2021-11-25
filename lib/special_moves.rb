@@ -72,6 +72,7 @@ class SpecialMoves
   end
 
   def check_spaces_attacked?(k_pos, which_rook, enemy_moves)
+    p enemy_moves
     if which_rook == 'left'
       one_space = [k_pos[0], k_pos[1] - 1]
       two_space = [k_pos[0], k_pos[1] - 2]
@@ -80,7 +81,11 @@ class SpecialMoves
       two_space = [k_pos[0], k_pos[1] + 2]
     end
 
-    return false if enemy_moves.include?(one_space) && enemy_moves.include?(two_space)
+    puts "\n"
+    p one_space
+    p two_space
+
+    return false if enemy_moves.include?(one_space) || enemy_moves.include?(two_space)
 
     true
   end
