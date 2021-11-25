@@ -13,7 +13,7 @@ class King < ChessPieces
     super('king', color, index, white_key, black_key)
     @first_turn = true
     @check = false
-    @castling = true
+    @castling = false
   end
 
   def remove_possible_spaces_where_check(enemy_piece_possible_moves)
@@ -40,7 +40,7 @@ class King < ChessPieces
     @check = condition
   end
 
-  def update_castling_status_false
-    @castling = false
+  def update_castling_status(condition)
+    @castling = condition
   end
 end

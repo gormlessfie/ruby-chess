@@ -11,7 +11,7 @@ class Rook < ChessPieces
     black_key = create_key
     super('rook', color, index, white_key, black_key)
     @first_turn = true
-    @castling = true
+    @castling = false
   end
 
   def create_key
@@ -51,7 +51,7 @@ class Rook < ChessPieces
     @first_turn = false
   end
 
-  def update_castling_status_false
-    @castling = false
+  def update_castling_status(condition)
+    @castling = condition
   end
 end

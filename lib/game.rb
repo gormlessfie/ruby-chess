@@ -41,7 +41,7 @@ class Game
     update_king_check_condition(game_logic, player_king)
 
     # Check board to see if castling is possible and update rook and king for castling.
-    castling_procedure(@chess_board, player)
+    castling_procedure(@chess_board, player, player_king)
 
     # Get list of valid pieces that the player can move
     valid_pieces = valid_pieces_for_player(@chess_board, player)
@@ -246,6 +246,10 @@ class Game
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination)
 
+    if chosen_piece.name == 'king' && chosen_piece.castling
+      castling_move(board, chosen_initial, chosen_destination, player)
+    end
+
     # Check for pawn promotion condition if chosen_piece is a pawn
     pawn_promotion_procedure(chosen_piece, player, board) if chosen_piece.name == 'pawn'
   end
@@ -395,9 +399,36 @@ class Game
     valid_pieces_list
   end
 
-  def castling_procedure(board, player)
-    p @chess_board.get_rook(player.color, 'left')
-    p @chess_board.get_rook(player.color, 'right')
+  def castling_procedure(board, player, player_king)
+    enemy_moves = find_enemy_possible_moves(board, player.color)
+    castling_check = SpecialMoves.new(board, player, enemy_moves)
+
+    if castling_check.able_castling('left', player_king)
+      puts '       Castling available with your left rook'
+      castling_check.add_castling_spaces_king('left', player_king)
+    end
+    return unless castling_check.able_castling('right', player_king)
+
+    puts 'Castling available with your right rook'
+    castling_check.add_castling_spaces_king('right', player_king)
+  end
+
+  def castling_move(board, chosen_initial, chosen_destination, player)
+    rook = board.get_list_of_pieces(player.color).select do |piece|
+      piece.name == 'rook' && piece.castling
+    end
+    rook = rook[0]
+    rook_destination = find_rook_destination(chosen_initial, chosen_destination)
+    move_piece_complete(board, rook, rook.current_pos, rook_destination)
+  end
+
+  def find_rook_destination(chosen_initial, chosen_destination)
+    case chosen_destination[1]
+    when 2
+      [chosen_initial[0], 3]
+    when 6
+      [chosen_initial[0], 5]
+    end
   end
 
   def pawn_promotion_procedure(chosen_piece, player, board)
