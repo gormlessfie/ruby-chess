@@ -86,13 +86,7 @@ class Game
   def setup_piece(board, player)
     loop do
       chosen_initial = player.player_input('select')
-      exit if chosen_initial.match(/Q/i)
-
-      if chosen_initial.match(/S/i)
-        saver = SaveLoader.new(self)
-        saver.setup_save_folder
-        saver.save_game
-      end
+      chosen_initial = player.player_input('select') if game_options(chosen_initial)
 
       chosen_space = board.board[chosen_initial[0]][chosen_initial[1]]
 
@@ -565,7 +559,21 @@ class Game
     )
   end
 
-  def save_current_game(game)
+  def save_current_game
+    saver = SaveLoader.new(self)
+    saver.setup_save_folder
+    saver.save_game
+  end
 
+  def game_options(input)
+    return false if input.is_a?(Array)
+
+    exit if input.match(/Q/i)
+    if input.match(/S/i)
+      save_current_game
+      return true
+    end
+
+    false
   end
 end

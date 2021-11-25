@@ -4,7 +4,7 @@ require 'date'
 
 # This saves and loads the game. This will save the current state of the board.
 class SaveLoader
-  def initialize(game, winner, turn_counter, current_turn)
+  def initialize(game)
     @game = game
   end
 
