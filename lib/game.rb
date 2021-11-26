@@ -22,35 +22,35 @@ class Game
 
   def game_round
     while @winner.nil?
-      player_turn(@white_player) if @winner.nil?
-      player_turn(@black_player) if @winner.nil?
+      player_turn(@chess_board, @white_player) if @winner.nil?
+      player_turn(@chess_board, @black_player) if @winner.nil?
       increment_turn_counter if @winner.nil?
     end
   end
 
-  def player_turn(player)
+  def player_turn(board, player)
     update_current_turn(player.color)
     # Update all pieces at the start of every turn
-    update_all_pieces(@chess_board, @chess_board.find_all_pieces)
+    update_all_pieces(board, board.find_all_pieces)
 
-    update_king_possible_spaces_when_attacked(@chess_board, 'white')
-    update_king_possible_spaces_when_attacked(@chess_board, 'black')
+    update_king_possible_spaces_when_attacked(board, 'white')
+    update_king_possible_spaces_when_attacked(board, 'black')
 
     # Create game_logic with current board
-    game_logic = GameLogic.new(@chess_board)
-    player_king = @chess_board.get_king(player.color)
+    game_logic = GameLogic.new(board)
+    player_king = board.get_king(player.color)
 
     # Check & update player king check
     update_king_check_condition(game_logic, player_king)
 
     # Check board to see if castling is possible and update rook and king for castling.
-    castling_procedure(@chess_board, player, player_king)
+    castling_procedure(board, player, player_king)
 
     # Get list of valid pieces that the player can move
-    valid_pieces = valid_pieces_for_player(@chess_board, player)
+    valid_pieces = valid_pieces_for_player(board, player)
 
     # Check board for checkmate condition
-    if find_valid_pieces_stop_check(@chess_board, player, player_king)&.length&.zero? &&
+    if find_valid_pieces_stop_check(board, player, player_king)&.length&.zero? &&
        game_logic.checkmate?(player_king)
       choose_winner(player.opponent_color)
       return if @winner
@@ -75,11 +75,11 @@ class Game
     # that is within the list of possible move space that blocks movement to
     # the king.
     if game_logic.king_in_check?(player_king)
-      simulated_board = simulate_valid_move_when_check(@chess_board, player)
-      @chess_board.board = simulated_board.deep_copy
+      simulated_board = simulate_valid_move_when_check(board, player)
+      board.board = simulated_board.deep_copy
     else
       # Every piece is simulated and updated at the start of every turn.
-      check_self_check_player_turn(@chess_board, player)
+      check_self_check_player_turn(board, player)
     end
   end
 
@@ -87,9 +87,16 @@ class Game
     loop do
       chosen_initial = nil
       loop do
+        break if player.is_a?(ComputerPlayer)
+
         chosen_initial = game_options(board, player.player_input('select'))
         break if chosen_initial.is_a?(Array)
       end
+
+      if player.is_a?(ComputerPlayer)
+        chosen_initial = [1, 1]
+      end
+
       chosen_space = board.board[chosen_initial[0]][chosen_initial[1]]
 
       return chosen_space.piece if chosen_space.piece &&
@@ -233,7 +240,7 @@ class Game
     chosen_initial = chosen_piece.current_pos
 
     # clear
-    clear_console
+    # clear_console
 
     # display board
     print_board(board)
@@ -248,7 +255,7 @@ class Game
     chosen_destination = choose_destination(player, chosen_piece, board)
 
     # clear
-    clear_console
+    # clear_console
 
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination)
@@ -263,17 +270,17 @@ class Game
 
   def choose_destination(player, chosen_piece, board)
     loop do
-      destination = if @black_player.is_a?(Player)
-                      player.player_input('destination')
-                    else
+      destination = if player.cpu?
                       player.computer_destination(chosen_piece)
+                    else
+                      player.player_input('destination')
                     end
 
       return destination if chosen_piece.possible_moves.flatten(1).include?(destination)
 
       # check if input is within possible moves for that piece
 
-      clear_console
+      # clear_console
       print_board(board)
       puts "\n"
 
@@ -501,7 +508,7 @@ class Game
   end
 
   def error_message_invalid_space(board, space, position)
-    clear_console
+    # clear_console
     print_board(board)
     puts "\n"
     print '       '
@@ -524,7 +531,7 @@ class Game
   end
 
   def game_start
-    clear_console
+    # clear_console
     intro_message
     game_round
     game_end_message(@winner)
@@ -573,7 +580,7 @@ class Game
 
   def save_current_game(board)
     saver = SaveLoader.new
-    clear_console
+    # clear_console
     saver.save_game(self)
     print_board(board)
   end

@@ -42,6 +42,10 @@ class Player
     end
   end
 
+  def cpu?
+    false
+  end
+
   private
 
   def pawn_explanation

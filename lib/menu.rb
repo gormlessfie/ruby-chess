@@ -23,11 +23,23 @@ class Menu
     )
   end
 
+  def print_choose_player_two
+    puts %(
+      Who will you play against:
+
+      (1) Computer
+      (2) Human player
+
+    )
+  end
+
   def get_menu_input(min, max)
     print '      Please make a selection: '
     loop do
       choice = gets.chomp.to_i
       return choice if choice.between?(min, max)
+
+      puts "      Invalid selection. Input must be #{min} or #{max}"
     end
   end
 
@@ -43,8 +55,8 @@ class Menu
     true
   end
 
-  def start_new_game
-    game = Game.new(Player.new('black'))
+  def start_new_game(player_two = Player.new('black'))
+    game = Game.new(player_two)
     game.game_start
   end
 
@@ -55,11 +67,20 @@ class Menu
       system('clear')
       case choice
       when 1
-        start_new_game
+        computer_play? ? start_new_game(ComputerPlayer.new) : start_new_game
         break
       when 2
         break if load_menu
       end
     end
+  end
+
+  def computer_play?
+    loop do
+      print_choose_player_two
+      return true if get_menu_input(1, 2) == 1
+    end
+
+    false
   end
 end
