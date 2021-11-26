@@ -76,10 +76,8 @@ class Menu
   end
 
   def computer_play?
-    loop do
-      print_choose_player_two
-      return true if get_menu_input(1, 2) == 1
-    end
+    print_choose_player_two
+    return true if get_menu_input(1, 2) == 1
 
     false
   end
