@@ -387,6 +387,10 @@ class Game
                     .get_list_of_pieces(player.color)
                     .select { |piece| true unless piece.possible_moves.empty? }
 
+    base_list = base_board
+                .get_list_of_pieces(player.color)
+                .select { |piece| true unless piece.possible_moves.empty? }
+
     player_pieces.each do |sim_piece|
       initial = sim_piece.current_pos
 
@@ -419,7 +423,9 @@ class Game
           sim_piece.possible_moves.delete_if { !causes_check }
         end
       end
-      valid_pieces_list.push(sim_piece) unless sim_piece.possible_moves.empty?
+
+      base_piece = base_list.select { |piece| piece.current_pos == initial }
+      valid_pieces_list.push(base_piece[0]) unless sim_piece.possible_moves.empty?
     end
 
     valid_pieces_list
