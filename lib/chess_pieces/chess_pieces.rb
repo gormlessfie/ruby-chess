@@ -19,6 +19,10 @@ class ChessPieces
     @possible_moves = create_possible_moves(@current_pos, @white_key, @black_key)
   end
 
+  def update_directional_list(index, moves)
+    @possible_moves[index] = moves
+  end
+
   def create_key
     # The key is in the order: middle-left, top-left, top, top-right, right,
     # bottom-right, bottom, bottom-left,
