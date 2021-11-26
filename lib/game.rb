@@ -75,8 +75,14 @@ class Game
     # that is within the list of possible move space that blocks movement to
     # the king.
     if game_logic.king_in_check?(player_king)
-      simulated_board = simulate_valid_move_when_check(board, player)
-      board.board = simulated_board.deep_copy
+      if player.cpu?
+        # if player is a CPU, then the possible moves of the pieces that can check
+        # should only be moves that will check. Not every possible move that the piece can
+        # do even if it won't check.
+      else
+        simulated_board = simulate_valid_move_when_check(board, player)
+        board.board = simulated_board.deep_copy
+      end
     else
       # Every piece is simulated and updated at the start of every turn.
       check_self_check_player_turn(board, player)
@@ -126,8 +132,9 @@ class Game
     simulated_board = nil
     loop do
       print '       '
-      puts 'You must stop the check. Please select a unit that can move to ' \
-      'protect your king!'
+      puts 'You must stop the check. Please select a unit'
+      print '       '
+      puts 'that can move to protect your king!'
 
       # create a new board object to simulate the move
       simulated_board = Board.new
