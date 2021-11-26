@@ -600,7 +600,8 @@ class Game
     @winner = loaded_save.instance_variable_get(:@winner)
     @turn_counter = loaded_save.instance_variable_get(:@turn_counter)
     @current_turn = loaded_save.instance_variable_get(:@current_turn)
-
+    @white_player = loaded_save.instance_variable_get(:@white_player)
+    @black_player = loaded_save.instance_variable_get(:@black_player)
     game_continue
   end
 
