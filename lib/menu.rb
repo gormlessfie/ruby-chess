@@ -2,6 +2,8 @@
 
 require './lib/game'
 require './lib/save_loader'
+require './lib/player'
+require './lib/cpu'
 
 # This is the menu which gives the player options on how to create the game.
 class Menu
@@ -35,14 +37,14 @@ class Menu
 
     return false if loaded_game.nil?
 
-    game = Game.new
+    game = Game.new(Player.new('black'))
     game.load_save_game(loaded_game)
 
     true
   end
 
   def start_new_game
-    game = Game.new
+    game = Game.new(Player.new('black'))
     game.game_start
   end
 

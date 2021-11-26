@@ -11,10 +11,10 @@ require 'pry-byebug'
 
 # This holds all the methods that runs the game such as turns.
 class Game
-  def initialize
+  def initialize(black_player)
     @chess_board = Board.new
     @white_player = Player.new('white')
-    @black_player = Player.new('black')
+    @black_player = black_player
     @winner = nil
     @turn_counter = 0
     @current_turn = nil
@@ -263,7 +263,11 @@ class Game
 
   def choose_destination(player, chosen_piece, board)
     loop do
-      destination = player.player_input('destination')
+      destination = if @black_player.is_a?(Player)
+                      player.player_input('destination')
+                    else
+                      player.computer_destination(chosen_piece)
+                    end
 
       return destination if chosen_piece.possible_moves.flatten(1).include?(destination)
 
