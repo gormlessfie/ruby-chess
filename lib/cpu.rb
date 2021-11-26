@@ -16,7 +16,7 @@ class ComputerPlayer < Player
     # This should have an valid_piece_list as argument
     # CPU chooses a random piece with #sample
     # The cpu then chooses a random possible move from the random piece
-    valid_pieces_list.sample
+    valid_pieces_list.sample.current_pos
   end
 
   def computer_destination(chosen_piece)

@@ -87,14 +87,15 @@ class Game
     loop do
       chosen_initial = nil
       loop do
-        break if player.is_a?(ComputerPlayer)
+        break if player.cpu?
 
         chosen_initial = game_options(board, player.player_input('select'))
         break if chosen_initial.is_a?(Array)
       end
 
-      if player.is_a?(ComputerPlayer)
-        chosen_initial = [1, 1]
+      if player.cpu?
+        valid_list = valid_pieces_for_player(board, player)
+        chosen_initial = player.player_input(valid_list)
       end
 
       chosen_space = board.board[chosen_initial[0]][chosen_initial[1]]
@@ -373,6 +374,9 @@ class Game
     array
   end
 
+  # This provides a list of sim pieces which have already moved. I want the list
+  # of pieces from the original board that is valid to move without causing king
+  # to be checked.
   def valid_pieces_for_player(base_board, player)
     valid_pieces_list = []
 
