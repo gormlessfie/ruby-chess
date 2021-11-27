@@ -31,7 +31,8 @@ class GameLogic
     # A stalemate is decided when...
     # 1 King is not in check
     # 2 No valid pieces.
-    return true if valid_list.empty? && !king.check
+    valid_list.map { |valid_piece| true if valid_piece.possible_moves.empty? }
+    return true if valid_list.all?(true) && !king.check
 
     false
   end
