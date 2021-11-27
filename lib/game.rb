@@ -606,14 +606,16 @@ class Game
 
   def game_end_message(winner)
     print_board(@chess_board)
-    puts %(
-       #{winner.upcase} has won!
-    )
-    return unless winner == 'stalemate'
-
-    puts %(
-      The game was a #{winner.upcase}.
-    )
+    case winner
+    when 'white' || 'black'
+      puts %(
+        #{winner.upcase} has won!
+      )
+    when 'STALEMATE'
+      puts %(
+        The game was a #{winner.upcase}.
+      )
+    end
   end
 
   def save_current_game(board)
