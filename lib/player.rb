@@ -15,6 +15,7 @@ class Player
       puts "\n"
 
       return input.split(',').map(&:to_i) if input.match(/^[0-7]{1},[0-7]{1}$/)
+      return input if input.match(/^[QS]{1}$/i)
 
       print '       '
       puts "The input #{input} is invalid. It must be '#y,#x'"
@@ -41,6 +42,10 @@ class Player
     end
   end
 
+  def cpu?
+    false
+  end
+
   private
 
   def pawn_explanation
@@ -58,9 +63,10 @@ class Player
     puts "\n"
     print '       '
     if type == 'select'
-      puts "It is #{@color}'s turn. Please input a selection in '#y,#x' form"
-      print '       '
-      print 'for the piece that you wish to move: '
+      puts 'Input [Q] to quit. Input [S] to save.'
+      puts "\n"
+      puts "       It is #{@color}'s turn. Please input a selection in '#y,#x' form"
+      print '       for the piece that you wish to move: '
     else
       print 'Please select where to move the piece: '
     end

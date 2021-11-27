@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require './lib/game'
+require './lib/menu'
 
-game = Game.new
+chess_game = Menu.new
 
-game.game_start
+chess_game.game_menu
