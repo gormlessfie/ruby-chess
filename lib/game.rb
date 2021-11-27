@@ -48,6 +48,7 @@ class Game
 
     # Get list of valid pieces that the player can move
     valid_pieces = valid_pieces_for_player(board, player)
+    valid_pieces = only_valid_move_when_check(board, player) if game_logic.king_in_check?(player_king)
 
     # Check board for checkmate condition
     if find_valid_pieces_stop_check(board, player, player_king)&.length&.zero? &&
@@ -74,24 +75,10 @@ class Game
     # The piece should be able to eat the attacking piece, or move to a space
     # that is within the list of possible move space that blocks movement to
     # the king.
-    if game_logic.king_in_check?(player_king)
-      if player.cpu?
-        # if player is a CPU, then the possible moves of the pieces that can check
-        # should only be moves that will check. Not every possible move that the piece can
-        # do even if it won't check.
-        only_valid_move_when_check(board, player)
-        check_self_check_player_turn(board, player)
-      else
-        simulated_board = simulate_valid_move_when_check(board, player)
-        board.board = simulated_board.deep_copy
-      end
-    else
-      # Every piece is simulated and updated at the start of every turn.
-      check_self_check_player_turn(board, player)
-    end
+    check_self_check_player_turn(valid_pieces, board, player)
   end
 
-  def setup_piece(board, player)
+  def setup_piece(valid_list, board, player)
     loop do
       chosen_initial = nil
       loop do
@@ -100,19 +87,16 @@ class Game
         chosen_initial = game_options(board, player.player_input('select'))
         break if chosen_initial.is_a?(Array)
       end
-
-      if player.cpu?
-        valid_list = valid_pieces_for_player(board, player)
-        chosen_initial = player.player_input(valid_list)
-      end
+      chosen_initial = player.player_input(valid_list) if player.cpu?
 
       chosen_space = board.board[chosen_initial[0]][chosen_initial[1]]
 
       return chosen_space.piece if chosen_space.piece &&
                                    chosen_space.piece.color == player.color &&
-                                   !chosen_space.piece.possible_moves.empty?
+                                   !chosen_space.piece.possible_moves.empty? &&
+                                   piece_in_valid_list?(chosen_space.piece, valid_list)
 
-      error_message_invalid_space(board, chosen_space, chosen_initial)
+      error_message_invalid_space(board, chosen_space, chosen_initial, valid_list)
     end
   end
 
@@ -128,6 +112,15 @@ class Game
     chosen_piece.remove_possible_spaces_where_conflict(blocking_pieces)
     chosen_piece.add_possible_attack_spaces(attack_pieces)
     chosen_piece.remove_empty_direction_possible_moves
+  end
+
+  def piece_in_valid_list?(chosen_piece, valid_list)
+    valid_list.each do |valid_piece|
+      return true if valid_piece.name == chosen_piece.name &&
+                     valid_piece.current_pos == chosen_piece.current_pos
+    end
+
+    false
   end
 
   def simulate_valid_move_when_check(base_board, player)
@@ -168,8 +161,9 @@ class Game
 
   def only_valid_move_when_check(base_board, player)
     king = base_board.get_king(player.color)
-    valid_pieces = find_valid_pieces_stop_check(base_board, player, king)
-    remove_invalid_moves_from_valid_pieces_when_check(base_board, player, valid_pieces, king)
+    valid_list = find_valid_pieces_stop_check(base_board, player, king)
+    remove_invalid_moves_from_valid_pieces_when_check(base_board, player, valid_list, king)
+    valid_list
   end
 
   def remove_invalid_moves_from_valid_pieces_when_check(board, player, valid_list, king)
@@ -183,6 +177,7 @@ class Game
     # For each valid_piece, possible_moves directional list moves by removing
     # all moves that are not in the att_piece dir list
     valid_list.each do |valid_piece|
+      next if valid_piece.name == 'king'
       # Intersect the att_piece_dir_list with all []s of the valid_piece
       # possible move
 
@@ -192,7 +187,7 @@ class Game
           # p "#{valid_piece} #{idx} #{[directional_space]} in #{att_piece_dir_list}"
           valid_moves.push(directional_space) if att_piece_dir_list.include?([directional_space])
         end
-        valid_piece.update_directional_list(idx, valid_moves) unless valid_moves.empty?
+        valid_piece.update_directional_list(idx, valid_moves)
       end
       valid_piece.remove_empty_direction_possible_moves
     end
@@ -211,10 +206,10 @@ class Game
 
     attacking_piece = attacking_piece[0]
     att_piece_dir_list = board.attacking_piece_directional_list(attacking_piece, king).flatten(1)
+    att_piece_dir_list.push(attacking_piece.current_pos)
     list_player_pieces.each do |piece|
       valid_pieces.push(piece) if piece.name == 'king' && !piece.possible_moves.empty?
       next if piece.possible_moves.empty?
-
       next unless piece_stop_check?(att_piece_dir_list,
                                     attacking_piece,
                                     piece)
@@ -228,13 +223,13 @@ class Game
     valid_pieces.uniq
   end
 
-  def check_self_check_player_turn(board, player)
+  def check_self_check_player_turn(valid_list, board, player)
     loop do
       # Make a dupe of the board
       safe_board = board.deep_copy
 
       # Do move
-      player_move_piece(player, board)
+      player_move_piece(valid_list, player, board)
 
       # Update board with new info
       update_all_pieces(board, board.find_all_pieces)
@@ -258,12 +253,12 @@ class Game
       piece.possible_moves.include?([attacking_piece.current_pos])
   end
 
-  def player_move_piece(player, board)
+  def player_move_piece(valid_list, player, board)
     # display board
     print_board(board)
 
     # pick a piece to move.
-    chosen_piece = setup_piece(board, player)
+    chosen_piece = setup_piece(valid_list, board, player)
     chosen_initial = chosen_piece.current_pos
 
     # clear
@@ -358,7 +353,9 @@ class Game
   def update_king_possible_spaces_when_attacked(board, color)
     list = board.get_list_of_pieces(color)
     list.each do |chosen_piece|
-      send_update_king_remove_check_spaces(board, chosen_piece.color, chosen_piece) if chosen_piece.name == 'king'
+      if chosen_piece.name == 'king' && chosen_piece.color == color
+        send_update_king_remove_check_spaces(board, chosen_piece.color, chosen_piece)
+      end
     end
   end
 
@@ -376,8 +373,9 @@ class Game
     array = []
 
     enemy_list.each do |piece|
-      possible_list = piece.possible_moves
-      possible_list.each do |directional_list|
+      possible_list = nil
+      possible_list = piece.possible_moves unless piece.name == 'pawn'
+      possible_list&.each do |directional_list|
         # This does not add pawn movement into the list. Pawn attack added later.
         next if piece.name == 'pawn'
 
@@ -387,15 +385,15 @@ class Game
       end
 
       # Adds the pawn attack_spaces
-      next unless piece.name == 'pawn'
+      if piece.name == 'pawn'
+        # push the attack spaces of the pawn, not the movement direction
+        pawn_collision = UnitCollision.new(board)
+        left = pawn_collision.calc_pawn_potential_attack(piece, 0)
+        right = pawn_collision.calc_pawn_potential_attack(piece, 1)
 
-      # push the attack spaces of the pawn, not the movement direction
-      pawn_collision = UnitCollision.new(board)
-      left = pawn_collision.calc_pawn_potential_attack(piece, 0)
-      right = pawn_collision.calc_pawn_potential_attack(piece, 1)
-
-      array.push(left) unless left.nil?
-      array.push(right) unless right.nil?
+        array.push(left) unless left.nil?
+        array.push(right) unless right.nil?
+      end
     end
     array
   end
@@ -543,17 +541,21 @@ class Game
     puts "\n"
   end
 
-  def error_message_invalid_space(board, space, position)
+  def error_message_invalid_space(board, space, position, valid_list)
     # clear_console
     print_board(board)
     puts "\n"
     print '       '
-
     if space.piece.nil?
       puts "You have selected #{position} which contains no chess piece."
     elsif space.piece.possible_moves.empty?
       puts "There are no possible spaces for this #{space.piece.color} " \
            "#{space.piece.name} to move to."
+    elsif !piece_in_valid_list?(space.piece, valid_list)
+      puts 'You must choose a piece that is valid.'
+      print '       '
+      print 'The valid pieces are: '
+      valid_list.each { |piece| print "#{piece.name}, " }
     else
       puts "You have selected #{position} which is a piece not of your color."
       print '       '
