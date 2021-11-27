@@ -14,11 +14,11 @@ class SpecialMoves
 
   # Castling is done with the rook and king piece. King moves two spaces towards
   # The rook being castled. The rook will be on the space the king skipped over.
-    # Rook must not have moved x
-    # King must not have moved x
-    # King is not in check x
-    # King must not move over a space that can be attacked by an enemy piece.
-    # Squares between the King and the Rook must be empty
+  # Rook must not have moved x
+  # King must not have moved x
+  # King is not in check x
+  # King must not move over a space that can be attacked by an enemy piece.
+  # Squares between the King and the Rook must be empty
 
   def able_castling(which_rook, player_king)
     player_rook = @special_board.get_rook(@player.color, which_rook)
@@ -51,6 +51,8 @@ class SpecialMoves
 
   def check_rook_first_turn?(which_rook)
     player_rook = @special_board.get_rook(@player.color, which_rook)
+    return false if player_rook.nil?
+
     return false unless player_rook.first_turn
 
     true
@@ -112,6 +114,16 @@ class SpecialMoves
   # The enemy pawn make move diagonally to the square that was passed over by
   # the double stepping pawn, the third row.
   # This move must be done directly after the double step move
+
+  # Pawns should have an en_passant variable which becomes true if the pawn did
+  # a 2 square move. (The leap on the first turn)
+
+  # Pawns with a true en_passant variable are able to get eaten by pawns to the
+  # left or right of its current position
+
+  # When the en_passant variable is true and there are pawns to the left or right
+  # Then update the pawn to the left or right with the en_passant possible move
+  # The attacking pawn will move to the pawn's current rank position - 1
 
   def check_for_en_passant
   end
