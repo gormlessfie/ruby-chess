@@ -141,7 +141,6 @@ class SpecialMoves
   end
 
   def add_en_passant_attack_move(en_passant_recip, chosen_piece)
-    p en_passant_recip
     # adjust for differnt pawn color
     position = en_passant_recip.current_pos
     dest = en_passant_attack_move_pos(en_passant_recip, position)
