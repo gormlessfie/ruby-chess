@@ -49,7 +49,6 @@ class Game
     # Get list of valid pieces that the player can move
     valid_pieces = valid_pieces_for_player(board, player)
     valid_pieces = only_valid_move_when_check(board, player) if game_logic.king_in_check?(player_king)
-    #p valid_pieces
 
     # Check board for checkmate condition
     if find_valid_pieces_stop_check(board, player, player_king)&.length&.zero? &&
@@ -189,27 +188,64 @@ class Game
     # For each valid_piece, possible_moves directional list moves by removing
     # all moves that are not in the att_piece dir list
     valid_list.each do |valid_piece|
+      remove_invalid_moves_from_king_when_check(board, player, valid_piece) if valid_piece.name == 'king'
       next if valid_piece.name == 'king'
-      #p valid_piece if valid_piece.name == 'king'
-      #p valid_piece if valid_piece.name == 'pawn'
-      # Intersect the att_piece_dir_list with all []s of the valid_piece
-      # possible move
 
+      # check if att_piece_dir_list includes the space that piece can move into.
+      # if it it is valid, then it means that the piece can stop the check.
       valid_piece.possible_moves.each_with_index do |directional_list, idx|
         valid_moves = []
         directional_list.each do |directional_space|
-          #p "att piece dir list #{att_piece_dir_list}"
-          #p "#{valid_piece.name} dir space #{directional_space}"
-          # p "#{valid_piece} #{idx} #{[directional_space]} in #{att_piece_dir_list}"
-          #p att_piece_dir_list[0].include?(directional_space)
           valid_moves.push(directional_space) if att_piece_dir_list[0].include?(directional_space)
         end
         valid_piece.update_directional_list(idx, valid_moves)
       end
       valid_piece.remove_empty_direction_possible_moves
-      #p valid_piece if valid_piece.name == 'king'
-      p valid_piece if valid_piece.name == 'pawn'
     end
+  end
+
+  def remove_invalid_moves_from_king_when_check(board, player, valid_piece)
+    # The king still has the valid move of moving away from the attacking piece
+    # This does not work because the king would still be in check if the piece
+    # can go indefinitely in a direction.
+    # ex: queen at 1, 1 ; king at 2, 1; king possible moves will include 3, 1; even though it would still be in check.
+    # This is a oversight because queen can only move to 2, 1.
+
+    valid_initial = valid_piece.current_pos
+    valid_directions = valid_piece.possible_moves
+
+    # To simulate it, I need to make a copy of the board for every direction.
+    valid_directions.each_with_index do |dir_list, idx|
+      valid_moves = []
+
+      dir_list.each do |dir_space|
+        # Create a new sim board
+        sim_board = Board.new
+        sim_board.board = board.deep_copy
+
+        # Get sim king
+        sim_king = sim_board.get_king(player.color)
+
+        # perform the move on the simulated board
+        move_piece_complete(sim_board, sim_king, valid_initial, dir_space, player)
+
+        # Update the possible moves of the attacking piece.
+        update_all_pieces(sim_board, sim_board.find_all_pieces)
+
+        # create a new game_logic
+        sim_logic = GameLogic.new(sim_board)
+
+        # Update the king check condition
+        update_king_check_condition(sim_logic, sim_king)
+
+        # Push the possible space
+        valid_moves.push(dir_space) unless sim_king.check
+      end
+      # replace the directional list of the piece.
+      valid_piece.update_directional_list(idx, valid_moves)
+    end
+    # Remove all empty direction lists that are empty
+    valid_piece.remove_empty_direction_possible_moves
   end
 
   def find_valid_pieces_stop_check(board, player, king)
