@@ -11,9 +11,9 @@ require 'pry-byebug'
 
 # This holds all the methods that runs the game such as turns.
 class Game
-  def initialize(black_player)
+  def initialize(white_player, black_player)
     @chess_board = Board.new
-    @white_player = Player.new('white')
+    @white_player = white_player
     @black_player = black_player
     @winner = nil
     @turn_counter = 0
@@ -625,7 +625,7 @@ class Game
       puts 'You must choose a piece that is valid.'
       print '       '
       print 'The valid pieces are: '
-      valid_list.each { |piece| print "#{piece.name}, " }
+      valid_list.each { |piece| print "#{piece.name} at #{piece.current_pos}, " }
     else
       puts "You have selected #{position} which is a piece not of your color."
       print '       '
