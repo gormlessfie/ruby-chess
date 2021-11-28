@@ -44,11 +44,12 @@ class Game
     update_king_check_condition(game_logic, player_king)
 
     # Check board to see if castling is possible and update rook and king for castling
-    castling_procedure(board, player, player_king)
+    # castling_procedure(board, player, player_king)
 
     # Get list of valid pieces that the player can move
     valid_pieces = valid_pieces_for_player(board, player)
     valid_pieces = only_valid_move_when_check(board, player) if game_logic.king_in_check?(player_king)
+    p valid_pieces
 
     # Check board for checkmate condition
     if find_valid_pieces_stop_check(board, player, player_king)&.length&.zero? &&
@@ -59,7 +60,7 @@ class Game
 
     # Check board for stalemate condition
     if game_logic.determine_stalemate(valid_pieces, player_king)
-      choose_winner('stalemate')
+      choose_winner('STALEMATE')
       return if @winner
     end
 
@@ -168,6 +169,7 @@ class Game
     king = base_board.get_king(player.color)
     valid_list = find_valid_pieces_stop_check(base_board, player, king)
     remove_invalid_moves_from_valid_pieces_when_check(base_board, player, valid_list, king)
+    p valid_list
     valid_list
   end
 
@@ -177,24 +179,31 @@ class Game
 
     # Get the directional list of the attacking_piece which contains the enemy king
     att_piece_dir_list = board.attacking_piece_directional_list(att_piece, king)
-    att_piece_dir_list.concat([[att_piece.current_pos]])
+    att_piece_dir_list[0].push(att_piece.current_pos)
 
     # For each valid_piece, possible_moves directional list moves by removing
     # all moves that are not in the att_piece dir list
     valid_list.each do |valid_piece|
       next if valid_piece.name == 'king'
+      p valid_piece if valid_piece.name == 'king'
+      p valid_piece if valid_piece.name == 'pawn'
       # Intersect the att_piece_dir_list with all []s of the valid_piece
       # possible move
 
       valid_piece.possible_moves.each_with_index do |directional_list, idx|
         valid_moves = []
         directional_list.each do |directional_space|
+          p "att piece dir list #{att_piece_dir_list}"
+          p "#{valid_piece.name} dir space #{directional_space}"
           # p "#{valid_piece} #{idx} #{[directional_space]} in #{att_piece_dir_list}"
-          valid_moves.push(directional_space) if att_piece_dir_list.include?([directional_space])
+          p att_piece_dir_list[0].include?(directional_space)
+          valid_moves.push(directional_space) if att_piece_dir_list[0].include?(directional_space)
         end
         valid_piece.update_directional_list(idx, valid_moves)
       end
       valid_piece.remove_empty_direction_possible_moves
+      p valid_piece if valid_piece.name == 'king'
+      p valid_piece if valid_piece.name == 'pawn'
     end
   end
 
@@ -229,27 +238,30 @@ class Game
   end
 
   def check_self_check_player_turn(valid_list, board, player)
+    safe_board = nil
     loop do
       # Make a dupe of the board
-      safe_board = board.deep_copy
+      safe_board = Board.new
+      safe_board.board = board.deep_copy
 
       # Do move
-      player_move_piece(valid_list, player, board)
+      player_move_piece(valid_list, player, safe_board)
 
       # Update board with new info
-      update_all_pieces(board, board.find_all_pieces)
-      update_king_possible_spaces_when_attacked(board, player.color)
+      update_all_pieces(safe_board, safe_board.find_all_pieces)
+      update_king_possible_spaces_when_attacked(safe_board, player.color)
 
       # check player king
-      check_self_logic = GameLogic.new(board)
-      self_king = board.get_king(player.color)
+      check_self_logic = GameLogic.new(safe_board)
+      self_king = safe_board.get_king(player.color)
 
       break unless check_self_logic.king_in_check?(self_king)
 
       print_error_self_check
       # if check -> copy dupe over current_board
-      board.board = safe_board
+      # Once it is no longer in check
     end
+    board.board = safe_board.board
   end
 
   def piece_stop_check?(attacking_piece_list, attacking_piece, piece)
@@ -465,6 +477,7 @@ class Game
         directional_board.board = sim_board.deep_copy
 
         destination = directional_list[0]
+        destination = destination.flatten
         move_piece_complete(directional_board, sim_piece, initial, destination, player)
         update_all_pieces(directional_board, directional_board.find_all_pieces)
 
@@ -625,7 +638,7 @@ class Game
       puts 'You must choose a piece that is valid.'
       print '       '
       print 'The valid pieces are: '
-      valid_list.each { |piece| print "#{piece.name} at #{piece.current_pos}, " }
+      valid_list.each { |piece| print "#{piece.name} at #{piece.current_pos} #{piece.possible_moves}, " }
     else
       puts "You have selected #{position} which is a piece not of your color."
       print '       '
@@ -677,7 +690,7 @@ class Game
   def game_end_message(winner)
     print_board(@chess_board)
     case winner
-    when 'white' || 'black'
+    when 'white', 'black'
       puts %(
         #{winner.upcase} has won!
       )
