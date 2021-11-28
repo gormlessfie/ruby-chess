@@ -74,7 +74,6 @@ class SpecialMoves
   end
 
   def check_spaces_attacked?(k_pos, which_rook, enemy_moves)
-    p enemy_moves
     if which_rook == 'left'
       one_space = [k_pos[0], k_pos[1] - 1]
       two_space = [k_pos[0], k_pos[1] - 2]
@@ -82,11 +81,6 @@ class SpecialMoves
       one_space = [k_pos[0], k_pos[1] + 1]
       two_space = [k_pos[0], k_pos[1] + 2]
     end
-
-    puts "\n"
-    p one_space
-    p two_space
-
     return false if enemy_moves.include?(one_space) || enemy_moves.include?(two_space)
 
     true
@@ -125,7 +119,37 @@ class SpecialMoves
   # Then update the pawn to the left or right with the en_passant possible move
   # The attacking pawn will move to the pawn's current rank position - 1
 
-  def check_for_en_passant
+  def find_en_passant_recip
+    @special_board.get_list_pawns(@player.color).select(&:en_passant_recip)[0]
+  end
+
+  def find_en_passant_recip_enemy
+    @special_board.get_list_pawns(@player.opponent_color).select(&:en_passant_recip)[0]
+  end
+
+  def find_en_passant_pieces
+    @special_board.get_list_pawns(@player.color).select(&:en_passant)
+  end
+
+  def adj_piece_en_passant_recip(en_passant_pawn, side)
+    pos = en_passant_pawn.current_pos
+    adj_pos = pos[1] + side
+
+    return nil unless adj_pos.between?(0, 7)
+
+    @special_board.board[pos[0]][pos[1] + side].piece
+  end
+
+  def add_en_passant_attack_move(en_passant_recip, chosen_piece)
+    p en_passant_recip
+    # adjust for differnt pawn color
+    position = en_passant_recip.current_pos
+    dest = en_passant_attack_move_pos(en_passant_recip, position)
+    chosen_piece&.add_possible_attack_spaces([[[dest]]])
+  end
+
+  def en_passant_attack_move_pos(en_passant_recip, position)
+    en_passant_recip.color == 'white' ? [position[0] + 1, position[1]] : [position[0] - 1, position[1]]
   end
 
   # Pawn Promotion
