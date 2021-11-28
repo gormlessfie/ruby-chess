@@ -4,9 +4,9 @@
 # This object should be created and ran before player chooses piece to move.
 class GameLogic
   def initialize(board)
-    @chess_board = board
-    @list_of_white_pieces = @chess_board.get_list_of_pieces('white')
-    @list_of_black_pieces = @chess_board.get_list_of_pieces('black')
+    @logic_board = board
+    @list_of_white_pieces = @logic_board.get_list_of_pieces('white')
+    @list_of_black_pieces = @logic_board.get_list_of_pieces('black')
   end
 
   def king_in_check?(king)
@@ -28,11 +28,12 @@ class GameLogic
   end
 
   def determine_stalemate(valid_list, king)
+    return if king.check
     # A stalemate is decided when...
     # 1 King is not in check
-    # 2 No valid pieces.
-    valid_list.map { |valid_piece| true if valid_piece.possible_moves.empty? }
-    return true if valid_list.all?(true) && !king.check
+    # 2 No pieces that won't cause a self-check
+    list_pieces = valid_list.map { |valid_piece| true if valid_piece.possible_moves.empty? }
+    return true if list_pieces.all?(true) && king.possible_moves.empty
 
     false
   end
@@ -52,7 +53,21 @@ class GameLogic
   # Check the pieces_list of each player and see if they match any of these combinations.
   # Must check for both sides, ie King Knight vs King && King vs King Knight
   def determine_draw_turns(turns)
-    num_pieces = @chess_board.find_all_pieces.length
+    num_pieces = @logic_board.find_all_pieces.length
+
+    false
+  end
+
+  def determine_draw_king_king
+    white_list = @list_of_white_pieces
+    black_list = @list_of_black_pieces
+    return true if only_piece_king(white_list) && only_piece_king(black_list)
+
+    false
+  end
+
+  def only_piece_king(list)
+    return true if list.length == 1 && list[0].name == 'king'
 
     false
   end

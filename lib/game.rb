@@ -49,7 +49,7 @@ class Game
     # Get list of valid pieces that the player can move
     valid_pieces = valid_pieces_for_player(board, player)
     valid_pieces = only_valid_move_when_check(board, player) if game_logic.king_in_check?(player_king)
-    p valid_pieces
+    #p valid_pieces
 
     # Check board for checkmate condition
     if find_valid_pieces_stop_check(board, player, player_king)&.length&.zero? &&
@@ -67,6 +67,11 @@ class Game
     # Check board for draw condition
     if game_logic.determine_draw_turns(@turn_counter)
       choose_winner('draw')
+      return if @winner
+    end
+
+    if game_logic.determine_draw_king_king
+      choose_winner('DRAW')
       return if @winner
     end
 
@@ -169,7 +174,7 @@ class Game
     king = base_board.get_king(player.color)
     valid_list = find_valid_pieces_stop_check(base_board, player, king)
     remove_invalid_moves_from_valid_pieces_when_check(base_board, player, valid_list, king)
-    p valid_list
+    #p valid_list
     valid_list
   end
 
@@ -185,24 +190,24 @@ class Game
     # all moves that are not in the att_piece dir list
     valid_list.each do |valid_piece|
       next if valid_piece.name == 'king'
-      p valid_piece if valid_piece.name == 'king'
-      p valid_piece if valid_piece.name == 'pawn'
+      #p valid_piece if valid_piece.name == 'king'
+      #p valid_piece if valid_piece.name == 'pawn'
       # Intersect the att_piece_dir_list with all []s of the valid_piece
       # possible move
 
       valid_piece.possible_moves.each_with_index do |directional_list, idx|
         valid_moves = []
         directional_list.each do |directional_space|
-          p "att piece dir list #{att_piece_dir_list}"
-          p "#{valid_piece.name} dir space #{directional_space}"
+          #p "att piece dir list #{att_piece_dir_list}"
+          #p "#{valid_piece.name} dir space #{directional_space}"
           # p "#{valid_piece} #{idx} #{[directional_space]} in #{att_piece_dir_list}"
-          p att_piece_dir_list[0].include?(directional_space)
+          #p att_piece_dir_list[0].include?(directional_space)
           valid_moves.push(directional_space) if att_piece_dir_list[0].include?(directional_space)
         end
         valid_piece.update_directional_list(idx, valid_moves)
       end
       valid_piece.remove_empty_direction_possible_moves
-      p valid_piece if valid_piece.name == 'king'
+      #p valid_piece if valid_piece.name == 'king'
       p valid_piece if valid_piece.name == 'pawn'
     end
   end
@@ -695,6 +700,10 @@ class Game
         #{winner.upcase} has won!
       )
     when 'STALEMATE'
+      puts %(
+        The game was a #{winner.upcase}.
+      )
+    when 'DRAW'
       puts %(
         The game was a #{winner.upcase}.
       )
