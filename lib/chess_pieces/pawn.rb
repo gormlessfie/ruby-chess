@@ -7,23 +7,29 @@ require './lib/chess_pieces/chess_pieces'
 # black piece 1 space diagonal from it in front.
 class Pawn < ChessPieces
   attr_reader :first_turn, :pawn_attack_key_white, :pawn_attack_key_black,
-              :pawn_promotion
+              :pawn_promotion, :en_passant, :en_passant_recip
 
-  attr_accessor :potential_attack_spaces, :en_passant
+  attr_accessor :potential_attack_spaces
 
   def initialize(color, index)
     white_key = create_white_key
     black_key = create_black_key
     super('pawn', color, index, white_key, black_key)
     @first_turn = true
-    @potential_attack_spaces = []
     @pawn_attack_key_white = [[-1, -1], [-1, 1]]
     @pawn_attack_key_black = [[1, -1], [1, 1]]
     @pawn_promotion = false
     @en_passant = false
+    @en_passant_recip = false
   end
 
   def add_possible_attack_spaces(list)
+    list.each do |attack_space|
+      @possible_moves.push(attack_space.flatten(1)) unless attack_space.empty?
+    end
+  end
+
+  def remove_possible_attack_spaces(list)
     list.each do |attack_space|
       @possible_moves.push(attack_space.flatten(1)) unless attack_space.empty?
     end
@@ -59,5 +65,13 @@ class Pawn < ChessPieces
 
   def update_pawn_promotion
     @pawn_promotion = true
+  end
+
+  def update_en_passant(condition)
+    @en_passant = condition
+  end
+
+  def update_en_passant_recip(condition)
+    @en_passant_recip = condition
   end
 end
