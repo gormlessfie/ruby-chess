@@ -12,7 +12,7 @@ class Menu
   end
 
   def start_cpu_both
-    game = Game.new(ComputerPlayer.new, ComputerPlayer.new)
+    game = Game.new(ComputerPlayer.new('white'), ComputerPlayer.new('black'))
     game.game_start
   end
 
@@ -72,7 +72,7 @@ class Menu
       system('clear')
       case choice
       when 1
-        computer_play? ? start_new_game(Player.new('white'), ComputerPlayer.new) : start_new_game
+        computer_play? ? start_new_game(Player.new('white'), ComputerPlayer.new('black')) : start_new_game
         break
       when 2
         break if load_menu
