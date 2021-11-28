@@ -43,7 +43,7 @@ class Game
     # Check & update player king check
     update_king_check_condition(game_logic, player_king)
 
-    # Check board to see if castling is possible and update rook and king for castling.
+    # Check board to see if castling is possible and update rook and king for castling
     castling_procedure(board, player, player_king)
 
     # Get list of valid pieces that the player can move
@@ -90,6 +90,11 @@ class Game
       chosen_initial = player.player_input(valid_list) if player.cpu?
 
       chosen_space = board.board[chosen_initial[0]][chosen_initial[1]]
+
+      return chosen_space.piece if chosen_space.piece &&
+                                   chosen_space.piece.color == player.color &&
+                                   chosen_space.piece.name == 'pawn' &&
+                                   chosen_space.piece.en_passant
 
       return chosen_space.piece if chosen_space.piece &&
                                    chosen_space.piece.color == player.color &&
@@ -264,6 +269,20 @@ class Game
     # clear
     # clear_console
 
+    # Check if chosen piece is a pawn and en_passant
+    # If chosen piece is a pawn & en_passant, then add the en_passant move
+    # To the chosen piece.
+    special_moves = SpecialMoves.new(board, player) if chosen_piece.name == 'pawn'
+    en_passant_dest = nil
+
+    if chosen_piece.name == 'pawn' && chosen_piece.en_passant
+      # Update the possible move of this pawn
+      en_passant_recip = special_moves.find_en_passant_recip_enemy
+      special_moves.add_en_passant_attack_move(en_passant_recip, chosen_piece)
+      en_passant_dest = special_moves.en_passant_attack_move_pos(en_passant_recip, en_passant_recip.current_pos)
+      en_passant_recip.update_en_passant_recip(false)
+    end
+
     # display board
     print_board(board)
 
@@ -280,11 +299,20 @@ class Game
     # clear_console
 
     # move piece, update old spot, update current pos, update new moves
-    move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination)
+    move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination, player)
 
     if chosen_piece.name == 'king' && chosen_piece.castling
       castling_move(board, chosen_initial, chosen_destination, player)
     end
+
+    if chosen_piece.name == 'pawn' && chosen_piece.en_passant && chosen_piece.current_pos == en_passant_dest
+      en_passant_recip = special_moves.find_en_passant_recip_enemy
+      en_passant_move(board, en_passant_recip)
+    end
+
+    update_players_pawns_en_passant_false(board, chosen_piece)
+    # Delete en_passant_recip if chosen_piece.en_passant && performed en passant move.
+    # To see if en passant is performed, check to see if pawn moved to dest.
 
     # Check for pawn promotion condition if chosen_piece is a pawn
     pawn_promotion_procedure(chosen_piece, player, board) if chosen_piece.name == 'pawn'
@@ -312,7 +340,7 @@ class Game
     end
   end
 
-  def move_piece_complete(board, piece, initial, destination)
+  def move_piece_complete(board, piece, initial, destination, player = nil)
     # Move piece to designated space.
     board.move_piece(initial, destination)
 
@@ -324,6 +352,15 @@ class Game
 
     # update current_pos of the piece.
     piece.update_current_pos(destination)
+
+    # update pawn en passant_recip
+    special_moves = SpecialMoves.new(board, player)
+    check_pawn_en_passant_recip(piece, initial, destination)
+    # p "#{piece.name} #{piece.color} en_passant_recip:#{piece.en_passant_recip} en_passant: #{piece.en_passant}" if piece.name == 'pawn'
+    # check en_passant_recip, if true, then set en_passant on adj pawns, if exist
+    make_left_right_pawns_en_passant(special_moves) if piece.name == 'pawn' &&
+                                                       piece.en_passant_recip &&
+                                                       board == @chess_board
   end
 
   def update_piece_first_turn(piece)
@@ -428,7 +465,7 @@ class Game
         directional_board.board = sim_board.deep_copy
 
         destination = directional_list[0]
-        move_piece_complete(directional_board, sim_piece, initial, destination)
+        move_piece_complete(directional_board, sim_piece, initial, destination, player)
         update_all_pieces(directional_board, directional_board.find_all_pieces)
 
         directional_logic = GameLogic.new(directional_board)
@@ -476,6 +513,39 @@ class Game
     rook = rook[0]
     rook_destination = find_rook_destination(chosen_initial, chosen_destination)
     move_piece_complete(board, rook, rook.current_pos, rook_destination)
+  end
+
+  def make_left_right_pawns_en_passant(special_moves)
+    en_passant_recip = special_moves.find_en_passant_recip
+    return if en_passant_recip.nil?
+
+    # Check the space left and right for your player's pawn
+    left_piece = special_moves.adj_piece_en_passant_recip(en_passant_recip, -1)
+    right_piece = special_moves.adj_piece_en_passant_recip(en_passant_recip, 1)
+
+    left_piece.update_en_passant(true) if !left_piece.nil? && left_piece.name == 'pawn'
+    right_piece.update_en_passant(true) if !right_piece.nil? && right_piece.name == 'pawn'
+  end
+
+  def update_players_pawns_en_passant_false(board, piece)
+    list_player_pawns = board.get_list_pawns(piece.color)
+    list_player_pawns.each { |pawn| pawn.update_en_passant(false) }
+  end
+
+  def check_pawn_en_passant_recip(piece, initial, destination)
+    return unless piece.name == 'pawn'
+
+    color = piece.color
+
+    return piece.update_en_passant_recip(true) if color == 'white' && (destination[0] - initial[0]) == -2
+
+    return piece.update_en_passant_recip(true) if color == 'black' && (destination[0] - initial[0]) == 2
+
+    piece.update_en_passant_recip(false)
+  end
+
+  def en_passant_move(board, en_passant_recip)
+    board.make_space_empty(en_passant_recip.current_pos)
   end
 
   def find_rook_destination(chosen_initial, chosen_destination)
@@ -534,7 +604,7 @@ class Game
   def print_valid_pieces(list)
     print '       '
     print 'The valid pieces are: '
-    list.each do |piece|
+    list.uniq.each do |piece|
       print "#{piece.name} at #{piece.current_pos}, "
     end
 
@@ -575,8 +645,8 @@ class Game
     game_end_message(@winner)
   end
 
-  def game_continue
-    player_turn(@black_player) if @current_turn == 'black' && @winner.nil?
+  def game_continue(board)
+    player_turn(board, @black_player) if @current_turn == 'black' && @winner.nil?
     game_round
     game_end_message(@winner)
   end
@@ -632,7 +702,7 @@ class Game
     @current_turn = loaded_save.instance_variable_get(:@current_turn)
     @white_player = loaded_save.instance_variable_get(:@white_player)
     @black_player = loaded_save.instance_variable_get(:@black_player)
-    game_continue
+    game_continue(@chess_board)
   end
 
   def game_options(board, input)
