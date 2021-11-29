@@ -327,13 +327,12 @@ class Game
     # To the chosen piece.
     special_moves = SpecialMoves.new(board, player) if chosen_piece.name == 'pawn'
     en_passant_dest = nil
-
+    en_passant_recip = nil
     if chosen_piece.name == 'pawn' && chosen_piece.en_passant
       # Update the possible move of this pawn
       en_passant_recip = special_moves.find_en_passant_recip_enemy
       special_moves.add_en_passant_attack_move(en_passant_recip, chosen_piece)
       en_passant_dest = special_moves.en_passant_attack_move_pos(en_passant_recip, en_passant_recip.current_pos)
-      en_passant_recip.update_en_passant_recip(false)
     end
 
     castling_procedure(board, player, chosen_piece) if chosen_piece.name == 'king'
@@ -364,7 +363,6 @@ class Game
     if chosen_piece.name == 'pawn' &&
        chosen_piece.en_passant &&
        chosen_piece.current_pos == en_passant_dest
-      en_passant_recip = special_moves.find_en_passant_recip_enemy
       en_passant_move(board, en_passant_recip)
     end
 
@@ -416,9 +414,9 @@ class Game
     check_pawn_en_passant_recip(piece, initial, destination)
     # p "#{piece.name} #{piece.color} en_passant_recip:#{piece.en_passant_recip} en_passant: #{piece.en_passant}" if piece.name == 'pawn'
     # check en_passant_recip, if true, then set en_passant on adj pawns, if exist
-    make_left_right_pawns_en_passant(special_moves) if piece.name == 'pawn' &&
-                                                       piece.en_passant_recip &&
-                                                       board == @chess_board
+    if piece.name == 'pawn' && piece.en_passant_recip
+      make_left_right_pawns_en_passant(special_moves)
+    end
   end
 
   def update_piece_first_turn(piece)
