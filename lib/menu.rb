@@ -89,4 +89,5 @@ class Menu
 end
 
 m = Menu.new
-m.start_cpu_both
+
+10.times { m.start_cpu_both }

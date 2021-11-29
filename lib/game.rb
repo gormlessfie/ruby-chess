@@ -46,7 +46,6 @@ class Game
     # Get list of valid pieces that the player can move
     valid_pieces = valid_pieces_for_player(board, player)
     valid_pieces = only_valid_move_when_check(board, player) if game_logic.king_in_check?(player_king)
-    p valid_pieces
     # Check board for checkmate condition
     if find_valid_pieces_stop_check(board, player, player_king)&.length&.zero? &&
        game_logic.checkmate?(player_king)
@@ -175,28 +174,29 @@ class Game
 
   def remove_invalid_moves_from_valid_pieces_when_check(board, player, valid_list, king)
     # Get the attacking piece
-    att_piece = board.attacking_piece(player, king)[0]
+    att_pieces = board.attacking_piece(player, king)
+    att_pieces.each do |attacking_piece|
+      # Get the directional list of the attacking_piece which contains the enemy king
+      att_piece_dir_list = board.attacking_piece_directional_list(attacking_piece, king)
+      att_piece_dir_list[0].push(attacking_piece.current_pos)
 
-    # Get the directional list of the attacking_piece which contains the enemy king
-    att_piece_dir_list = board.attacking_piece_directional_list(att_piece, king)
-    att_piece_dir_list[0].push(att_piece.current_pos)
+      # For each valid_piece, possible_moves directional list moves by removing
+      # all moves that are not in the att_piece dir list
+      valid_list.each do |valid_piece|
+        remove_invalid_moves_from_king_when_check(board, player, valid_piece) if valid_piece.name == 'king'
+        next if valid_piece.name == 'king'
 
-    # For each valid_piece, possible_moves directional list moves by removing
-    # all moves that are not in the att_piece dir list
-    valid_list.each do |valid_piece|
-      remove_invalid_moves_from_king_when_check(board, player, valid_piece) if valid_piece.name == 'king'
-      next if valid_piece.name == 'king'
-
-      # check if att_piece_dir_list includes the space that piece can move into.
-      # if it it is valid, then it means that the piece can stop the check.
-      valid_piece.possible_moves.each_with_index do |directional_list, idx|
-        valid_moves = []
-        directional_list.each do |directional_space|
-          valid_moves.push(directional_space) if att_piece_dir_list[0].include?(directional_space)
+        # check if att_piece_dir_list includes the space that piece can move into.
+        # if it it is valid, then it means that the piece can stop the check.
+        valid_piece.possible_moves.each_with_index do |directional_list, idx|
+          valid_moves = []
+          directional_list.each do |directional_space|
+            valid_moves.push(directional_space) if att_piece_dir_list[0].include?(directional_space)
+          end
+          valid_piece.update_directional_list(idx, valid_moves)
         end
-        valid_piece.update_directional_list(idx, valid_moves)
+        valid_piece.remove_empty_direction_possible_moves
       end
-      valid_piece.remove_empty_direction_possible_moves
     end
   end
 
@@ -316,7 +316,7 @@ class Game
     chosen_initial = chosen_piece.current_pos
 
     # clear
-    # clear_console
+    clear_console
 
     # Check if chosen piece is a pawn and en_passant
     # If chosen piece is a pawn & en_passant, then add the en_passant move
@@ -347,7 +347,7 @@ class Game
     chosen_destination = choose_destination(player, chosen_piece, board)
 
     # clear
-    # clear_console
+    clear_console
 
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination, player)
@@ -384,7 +384,7 @@ class Game
 
       # check if input is within possible moves for that piece
 
-      # clear_console
+      clear_console
       print_board(board)
       puts "\n"
 
@@ -679,7 +679,7 @@ class Game
   end
 
   def error_message_invalid_space(board, space, position, valid_list)
-    # clear_console
+    clear_console
     print_board(board)
     puts "\n"
     print '       '
@@ -706,7 +706,7 @@ class Game
   end
 
   def game_start
-    # clear_console
+    clear_console
     intro_message
     game_round
     game_end_message(@winner)
@@ -761,7 +761,7 @@ class Game
 
   def save_current_game(board)
     saver = SaveLoader.new
-    # clear_console
+    clear_console
     saver.save_game(self)
     print_board(board)
   end
