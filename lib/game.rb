@@ -43,13 +43,10 @@ class Game
     # Check & update player king check
     update_king_check_condition(game_logic, player_king)
 
-    # Check board to see if castling is possible and update rook and king for castling
-    # castling_procedure(board, player, player_king)
-
     # Get list of valid pieces that the player can move
     valid_pieces = valid_pieces_for_player(board, player)
     valid_pieces = only_valid_move_when_check(board, player) if game_logic.king_in_check?(player_king)
-
+    p valid_pieces
     # Check board for checkmate condition
     if find_valid_pieces_stop_check(board, player, player_king)&.length&.zero? &&
        game_logic.checkmate?(player_king)
@@ -173,7 +170,6 @@ class Game
     king = base_board.get_king(player.color)
     valid_list = find_valid_pieces_stop_check(base_board, player, king)
     remove_invalid_moves_from_valid_pieces_when_check(base_board, player, valid_list, king)
-    #p valid_list
     valid_list
   end
 
@@ -336,6 +332,8 @@ class Game
       en_passant_recip.update_en_passant_recip(false)
     end
 
+    castling_procedure(board, player, chosen_piece) if chosen_piece.name == 'king' && chosen_piece.castling
+
     # display board
     print_board(board)
 
@@ -354,11 +352,14 @@ class Game
     # move piece, update old spot, update current pos, update new moves
     move_piece_complete(board, chosen_piece, chosen_initial, chosen_destination, player)
 
-    if chosen_piece.name == 'king' && chosen_piece.castling
+    if chosen_piece.name == 'king' && chosen_piece.castling &&
+       chosen_piece.current_pos == find_king_destination(chosen_initial, chosen_destination)
       castling_move(board, chosen_initial, chosen_destination, player)
     end
 
-    if chosen_piece.name == 'pawn' && chosen_piece.en_passant && chosen_piece.current_pos == en_passant_dest
+    if chosen_piece.name == 'pawn' &&
+       chosen_piece.en_passant &&
+       chosen_piece.current_pos == en_passant_dest
       en_passant_recip = special_moves.find_en_passant_recip_enemy
       en_passant_move(board, en_passant_recip)
     end
@@ -554,6 +555,7 @@ class Game
       puts '       Castling available with your left rook'
       castling_check.add_castling_spaces_king('left', player_king)
     end
+
     return unless castling_check.able_castling('right', player_king)
 
     puts 'Castling available with your right rook'
@@ -564,9 +566,11 @@ class Game
     rook = board.get_list_of_pieces(player.color).select do |piece|
       piece.name == 'rook' && piece.castling
     end
+    return if rook.empty?
+
     rook = rook[0]
     rook_destination = find_rook_destination(chosen_initial, chosen_destination)
-    move_piece_complete(board, rook, rook.current_pos, rook_destination)
+    move_piece_complete(board, rook, rook.current_pos, rook_destination, player)
   end
 
   def make_left_right_pawns_en_passant(special_moves)
@@ -608,6 +612,15 @@ class Game
       [chosen_initial[0], 3]
     when 6
       [chosen_initial[0], 5]
+    end
+  end
+
+  def find_king_destination(chosen_initial, chosen_destination)
+    case chosen_destination[1]
+    when 2
+      [chosen_destination[0], 2]
+    when 6
+      [chosen_destination[0], 6]
     end
   end
 
