@@ -101,9 +101,9 @@ class SpecialMoves
 
   def find_king_castling_destination(which_rook, player_king, k_pos)
     if which_rook == 'left'
-      player_king.possible_moves.push([[k_pos[0], k_pos[1] - 2]])
+      [[k_pos[0], k_pos[1] - 2]]
     else
-      player_king.possible_moves.push([[k_pos[0], k_pos[1] + 2]])
+      [[k_pos[0], k_pos[1] + 2]]
     end
   end
   # En passant
