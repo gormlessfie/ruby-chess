@@ -332,7 +332,7 @@ class Game
       en_passant_recip.update_en_passant_recip(false)
     end
 
-    castling_procedure(board, player, chosen_piece) if chosen_piece.name == 'king' && chosen_piece.castling
+    castling_procedure(board, player, chosen_piece) if chosen_piece.name == 'king'
 
     # display board
     print_board(board)
