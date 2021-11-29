@@ -191,8 +191,33 @@ class Game
         # if it it is valid, then it means that the piece can stop the check.
         valid_piece.possible_moves.each_with_index do |directional_list, idx|
           valid_moves = []
-          directional_list.each do |directional_space|
-            valid_moves.push(directional_space) if att_piece_dir_list[0].include?(directional_space)
+          directional_list.each do |dir_space|
+            if att_piece_dir_list[0].include?(dir_space)
+              # sim the move, if the dir_space also stops the check, then it is pushed, otherwise, no.
+              # create a new board object to simulate the move
+              sim_board = Board.new
+              sim_board.board = board.deep_copy
+
+              sim_piece = valid_piece.dup
+
+              # perform the move on the simulated board
+              move_piece_complete(sim_board, sim_piece, sim_piece.current_pos,
+                                  dir_space, player)
+              p valid_piece
+              p sim_piece
+
+              # Update the possible moves of the attacking piece.
+              update_all_pieces(sim_board, sim_board.find_all_pieces)
+
+              # create a new game_logic
+              sim_logic = GameLogic.new(sim_board)
+
+              sim_king = sim_board.get_king(player.color)
+
+              update_king_check_condition(sim_logic, sim_king)
+
+              valid_moves.push(dir_space) if !sim_king.check
+            end
           end
           valid_piece.update_directional_list(idx, valid_moves)
         end
