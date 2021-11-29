@@ -29,6 +29,9 @@ class GameLogic
 
   def determine_stalemate(valid_list, king)
     return if king.check
+
+    return true if valid_list.empty?
+
     # A stalemate is decided when...
     # 1 King is not in check
     # 2 No pieces that won't cause a self-check
