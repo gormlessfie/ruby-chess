@@ -69,8 +69,26 @@ class GameLogic
     false
   end
 
+  def determine_draw_king_bishop
+    white_list = @list_of_white_pieces
+    black_list = @list_of_black_pieces
+
+    if (only_piece_king_bishop(white_list) && only_piece_king(white_list)) ||
+       (only_piece_king_bishop(black_list) && only_piece_king(black_list))
+      return true
+    end
+
+    false
+  end
+
   def only_piece_king(list)
     return true if list.length == 1 && list[0].name == 'king'
+
+    false
+  end
+
+  def only_piece_king_bishop(list)
+    return true if list.length == 2 && list[0].name == 'king' && list[1].name == 'bishop'
 
     false
   end
