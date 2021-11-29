@@ -198,13 +198,11 @@ class Game
               sim_board = Board.new
               sim_board.board = board.deep_copy
 
-              sim_piece = valid_piece.dup
+              sim_piece = Marshal.load(Marshal.dump(valid_piece))
 
               # perform the move on the simulated board
               move_piece_complete(sim_board, sim_piece, sim_piece.current_pos,
                                   dir_space, player)
-              p valid_piece
-              p sim_piece
 
               # Update the possible moves of the attacking piece.
               update_all_pieces(sim_board, sim_board.find_all_pieces)
@@ -216,7 +214,7 @@ class Game
 
               update_king_check_condition(sim_logic, sim_king)
 
-              valid_moves.push(dir_space) if !sim_king.check
+              valid_moves.push(dir_space) unless sim_king.check
             end
           end
           valid_piece.update_directional_list(idx, valid_moves)
@@ -286,7 +284,7 @@ class Game
       att_piece_dir_list = board.attacking_piece_directional_list(attacking_piece, king).flatten(1)
       att_piece_dir_list.push(attacking_piece.current_pos)
       list_player_pieces.each do |piece|
-        # valid_pieces.push(piece) if piece.name == 'king' && !piece.possible_moves.empty?
+        valid_pieces.push(piece) if piece.name == 'king' && !piece.possible_moves.empty?
         next if piece.possible_moves.empty?
         next unless piece_stop_check?(att_piece_dir_list,
                                       attacking_piece,
@@ -299,7 +297,6 @@ class Game
     # A piece is added to the valid list if the piece's possible_moves list has
     # the attacking_piece current_pos or a possible_move that is the same as
     # the attacking_piece possible_move.
-    p valid_pieces
     valid_pieces.uniq
   end
 
