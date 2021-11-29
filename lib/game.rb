@@ -48,7 +48,7 @@ class Game
     valid_pieces = only_valid_move_when_check(board, player) if game_logic.king_in_check?(player_king)
 
     # Check board for checkmate condition
-    if find_valid_pieces_stop_check(board, player, player_king)&.length&.zero? &&
+    if valid_pieces&.length&.zero? &&
        game_logic.checkmate?(player_king)
       choose_winner(player.opponent_color)
       return if @winner
@@ -170,7 +170,7 @@ class Game
     king = base_board.get_king(player.color)
     valid_list = find_valid_pieces_stop_check(base_board, player, king)
     remove_invalid_moves_from_valid_pieces_when_check(base_board, player, valid_list, king)
-    valid_list
+    remove_pieces_no_moves_from_valid_pieces(valid_list)
   end
 
   def remove_invalid_moves_from_valid_pieces_when_check(board, player, valid_list, king)
@@ -266,6 +266,10 @@ class Game
     end
     # Remove all empty direction lists that are empty
     valid_piece.remove_empty_direction_possible_moves
+  end
+
+  def remove_pieces_no_moves_from_valid_pieces(valid_list)
+    valid_list.delete_if { |piece| piece.possible_moves.empty? }
   end
 
   def find_valid_pieces_stop_check(board, player, king)

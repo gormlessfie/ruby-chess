@@ -61,6 +61,23 @@ class GameLogic
     false
   end
 
+  def determine_draw_king_knight
+    determine_draw_two_pieces(King, Knight)
+  end
+
+  def determine_draw_king_bishop
+    determine_draw_two_pieces(King, Bishop)
+  end
+
+  def determine_draw_same_color_king_bishop
+    if determine_draw_two_pieces(King, Bishop)
+    end
+  end
+
+  def determine_space_color_bishops
+    # if bishops on same color, then draw
+  end
+
   def determine_draw_king_king
     white_list = @list_of_white_pieces
     black_list = @list_of_black_pieces
@@ -69,12 +86,12 @@ class GameLogic
     false
   end
 
-  def determine_draw_king_bishop
+  def determine_draw_two_pieces(piece_one, piece_two)
     white_list = @list_of_white_pieces
     black_list = @list_of_black_pieces
 
-    if (only_piece_king_bishop(white_list) && only_piece_king(white_list)) ||
-       (only_piece_king_bishop(black_list) && only_piece_king(black_list))
+    if (only_two_pieces(piece_one, piece_two, white_list) && only_piece_king(black_list)) ||
+       (only_two_pieces(piece_one, piece_two, black_list) && only_piece_king(white_list))
       return true
     end
 
@@ -82,13 +99,13 @@ class GameLogic
   end
 
   def only_piece_king(list)
-    return true if list.length == 1 && list[0].name == 'king'
+    return true if list.length == 1 && list.include?(King)
 
     false
   end
 
-  def only_piece_king_bishop(list)
-    return true if list.length == 2 && list[0].name == 'king' && list[1].name == 'bishop'
+  def only_two_pieces(piece_one, piece_two, list)
+    return true if list.length == 2 && list.include?(piece_one) && list.include?(piece_two)
 
     false
   end
