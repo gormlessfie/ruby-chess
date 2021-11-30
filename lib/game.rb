@@ -73,8 +73,6 @@ class Game
       choose_winner('DRAW')
       return if @winner
     end
-
-    p @turn_counter
     # If player is checked, must either move king or a piece that stops the check.
     # A piece that stops the check is one that makes the space the king is on no longer
     # possible.
