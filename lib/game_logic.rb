@@ -4,10 +4,19 @@
 # This object should be created and ran before player chooses piece to move.
 class GameLogic
   @@previous_boards = []
+  @@prev_pawn_pos = nil
+  @@prev_num_pieces = nil
+
   def initialize(board)
     @logic_board = board
     @list_of_white_pieces = @logic_board.get_list_of_pieces('white')
     @list_of_black_pieces = @logic_board.get_list_of_pieces('black')
+
+    @board_num_pieces = update_board_num_pieces
+    @board_pawn_pos = pawn_pos
+
+    @@prev_num_pieces = @board_num_pieces if @@prev_num_pieces.nil?
+    @@prev_pawn_pos = @board_pawn_pos if @@prev_pawn_pos.nil?
   end
 
   def king_in_check?(king)
@@ -68,17 +77,65 @@ class GameLogic
     @@previous_boards.push(current_board)
   end
 
+  def reset_turn_counter
+    true
+  end
+
+  def determine_fifty_turns(turn_counter)
+    reset_turn_counter if pawn_moved || made_capture
+
+    return true if turn_counter == 50
+
+    # If fifty turns has passed and no captures made, no pawns moved, draw.
+    #  Keep track of the number of pieces on the board.
+    #  Keep track of pawn positions.
+    # Only check this draw condition every fifty turns. ie turn counter 50
+    false
+  end
+
+  def pawn_moved
+    if @board_pawn_pos != @@prev_pawn_pos
+      update_prev_pawn_pos
+      true
+    else
+      false
+    end
+  end
+
+  def made_capture
+    if @board_num_pieces < @@prev_num_pieces
+      update_prev_num_pieces
+      true
+    else
+      false
+    end
+  end
+
+  def pawn_pos
+    @logic_board
+      .get_list_pawns('white')
+      .concat(@logic_board.get_list_pawns('black'))
+      .map(&:current_pos)
+  end
+
+  def update_prev_pawn_pos
+    @@prev_pawn_pos = @board_pawn_pos
+  end
+
+  def update_prev_num_pieces
+    @@prev_num_pieces = @board_num_pieces
+  end
+
+  def update_board_num_pieces
+    @board_num_pieces = @list_of_white_pieces
+                        .concat(@list_of_black_pieces).length
+  end
+
   def determine_three_rep_rule
     # If there are three occurrences of the same element, then true
     tally = @@previous_boards.tally.map { |_k, v| v }
 
     return true if tally.select { |occurrences| occurrences > 2 }.length.positive?
-    
-    false
-  end
-
-  def determine_draw_turns(turns)
-    num_pieces = @logic_board.find_all_pieces.length
 
     false
   end

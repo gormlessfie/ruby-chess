@@ -62,12 +62,10 @@ class Game
     end
 
     # Check board for draw condition
-    if game_logic.determine_draw_turns(@turn_counter)
-      choose_winner('draw')
-      return if @winner
-    end
+    @turn_counter = 0 if game_logic.reset_turn_counter
 
     if game_logic.determine_three_rep_rule ||
+       game_logic.determine_fifty_turns(@turn_counter) ||
        game_logic.determine_draw_king_king ||
        game_logic.determine_draw_king_knight ||
        game_logic.determine_draw_same_color_king_bishop ||
@@ -76,6 +74,7 @@ class Game
       return if @winner
     end
 
+    p @turn_counter
     # If player is checked, must either move king or a piece that stops the check.
     # A piece that stops the check is one that makes the space the king is on no longer
     # possible.
