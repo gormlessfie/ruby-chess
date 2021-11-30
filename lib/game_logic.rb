@@ -3,6 +3,7 @@
 # This checks if the board is in a state where a winner can be declared.
 # This object should be created and ran before player chooses piece to move.
 class GameLogic
+  @@previous_boards = []
   def initialize(board)
     @logic_board = board
     @list_of_white_pieces = @logic_board.get_list_of_pieces('white')
@@ -55,6 +56,27 @@ class GameLogic
   # King Knight vs King | King vs King | King Bishop vs King | King Bishop same space color vs King Bishop same space color
   # Check the pieces_list of each player and see if they match any of these combinations.
   # Must check for both sides, ie King Knight vs King && King vs King Knight
+  def add_to_history
+    current_board = []
+
+    @logic_board.board.each do |row|
+      row.each do |space|
+        current_board.push([space.piece&.name, space.piece&.color])
+      end
+    end
+
+    @@previous_boards.push(current_board)
+  end
+
+  def determine_three_rep_rule
+    # If there are three occurrences of the same element, then true
+    tally = @@previous_boards.tally.map { |_k, v| v }
+
+    return true if tally.select { |occurrences| occurrences > 2 }.length.positive?
+    
+    false
+  end
+
   def determine_draw_turns(turns)
     num_pieces = @logic_board.find_all_pieces.length
 
@@ -71,7 +93,7 @@ class GameLogic
 
   def determine_draw_same_color_king_bishop
     determine_draw_two_pieces('king', 'bishop') &&
-      determine_different_space_color_bishops
+      determine_same_space_color_bishops
   end
 
   def determine_same_space_color_bishops
@@ -121,5 +143,9 @@ class GameLogic
     return true if in_list.length == 2
 
     false
+  end
+
+  def show_history
+    @@previous_boards
   end
 end

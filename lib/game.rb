@@ -38,6 +38,7 @@ class Game
 
     # Create game_logic with current board
     game_logic = GameLogic.new(board)
+    game_logic.add_to_history
     player_king = board.get_king(player.color)
 
     # Check & update player king check
@@ -66,7 +67,8 @@ class Game
       return if @winner
     end
 
-    if game_logic.determine_draw_king_king ||
+    if game_logic.determine_three_rep_rule ||
+       game_logic.determine_draw_king_king ||
        game_logic.determine_draw_king_knight ||
        game_logic.determine_draw_same_color_king_bishop ||
        game_logic.determine_draw_king_bishop
@@ -788,6 +790,9 @@ class Game
         The game was a #{winner.upcase}.
       )
     end
+
+    game = GameLogic.new(@chess_board)
+    p game.determine_three_rep_rule
   end
 
   def save_current_game(board)
