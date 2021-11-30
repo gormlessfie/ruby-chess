@@ -159,9 +159,11 @@ class GameLogic
     white_bishop = @list_of_white_pieces.select { |piece| piece.is_a?(Bishop) }
     black_bishop = @list_of_black_pieces.select { |piece| piece.is_a?(Bishop) }
 
-    color_space_white_bishop = @logic_board.board[white_bishop.current_pos[0]][white_bishop.current_pos[1]]
+    return false if white_bishop.empty? || black_bishop.empty?
+
+    color_space_white_bishop = @logic_board.board[white_bishop[0].current_pos[0]][white_bishop[0].current_pos[1]]
                                            .color
-    color_space_black_bishop = @logic_board.board[black_bishop.current_pos[0]][black_bishop.current_pos[1]]
+    color_space_black_bishop = @logic_board.board[black_bishop[0].current_pos[0]][black_bishop[0].current_pos[1]]
                                            .color
 
     return true if color_space_white_bishop == color_space_black_bishop
