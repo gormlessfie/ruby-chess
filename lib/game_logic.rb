@@ -38,7 +38,7 @@ class GameLogic
   end
 
   def determine_stalemate(valid_list, king)
-    return if king.check
+    return false if king.check
 
     return true if valid_list.empty?
 
@@ -46,7 +46,7 @@ class GameLogic
     # 1 King is not in check
     # 2 No pieces that won't cause a self-check
     list_pieces = valid_list.map { |valid_piece| true if valid_piece.possible_moves.empty? }
-    return true if list_pieces.all?(true) && king.possible_moves.empty
+    return true if list_pieces.all?(true) && king.possible_moves.empty?
 
     false
   end

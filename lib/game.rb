@@ -46,7 +46,7 @@ class Game
 
     # Get list of valid pieces that the player can move
     valid_pieces = valid_pieces_for_player(board, player)
-    valid_pieces = only_valid_move_when_check(board, player) if game_logic.king_in_check?(player_king)
+    valid_pieces = only_valid_move_when_check(board, player) if player_king.check
 
     # Check board for checkmate condition
     if valid_pieces&.length&.zero? &&
@@ -187,6 +187,7 @@ class Game
       # all moves that are not in the att_piece dir list
       valid_list.each do |valid_piece|
         remove_invalid_moves_from_king_when_check(board, player, valid_piece) if valid_piece.name == 'king'
+        p valid_piece if valid_piece.name == 'king'
         next if valid_piece.name == 'king'
 
         # check if att_piece_dir_list includes the space that piece can move into.
@@ -536,7 +537,9 @@ class Game
                 .get_list_of_pieces(player.color)
                 .select { |piece| true unless piece.possible_moves.empty? }
 
-    player_pieces.each do |sim_piece|
+    player_pieces.each do |player_piece|
+      sim_piece = Marshal.load(Marshal.dump(player_piece))
+
       initial = sim_piece.current_pos
 
       sim_board = Board.new
@@ -787,9 +790,6 @@ class Game
         The game was a #{winner.upcase}.
       )
     end
-
-    game = GameLogic.new(@chess_board)
-    p game.determine_three_rep_rule
   end
 
   def save_current_game(board)
