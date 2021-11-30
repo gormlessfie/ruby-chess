@@ -66,16 +66,28 @@ class GameLogic
   end
 
   def determine_draw_king_bishop
-    determine_draw_two_pieces(King, Bishop)
+    determine_draw_two_pieces('king', 'bishop')
   end
 
   def determine_draw_same_color_king_bishop
-    if determine_draw_two_pieces(King, Bishop)
-    end
+    determine_draw_two_pieces('king', 'bishop') &&
+      determine_different_space_color_bishops
   end
 
-  def determine_space_color_bishops
+  def determine_same_space_color_bishops
     # if bishops on same color, then draw
+
+    white_bishop = @list_of_white_pieces.select { |piece| piece.is_a?(Bishop) }
+    black_bishop = @list_of_black_pieces.select { |piece| piece.is_a?(Bishop) }
+
+    color_space_white_bishop = @logic_board.board[white_bishop.current_pos[0]][white_bishop.current_pos[1]]
+                                           .color
+    color_space_black_bishop = @logic_board.board[black_bishop.current_pos[0]][black_bishop.current_pos[1]]
+                                           .color
+
+    return true if color_space_white_bishop == color_space_black_bishop
+
+    false
   end
 
   def determine_draw_king_king
@@ -99,13 +111,14 @@ class GameLogic
   end
 
   def only_piece_king(list)
-    return true if list.length == 1 && list.include?(King)
+    return true if list.length == 1 && list.select { |p| p.name == 'king' }[0]
 
     false
   end
 
   def only_two_pieces(piece_one, piece_two, list)
-    return true if list.length == 2 && list.include?(piece_one) && list.include?(piece_two)
+    in_list = list.select { |p| p.name == piece_one || p.name == piece_two }
+    return true if in_list.length == 2
 
     false
   end

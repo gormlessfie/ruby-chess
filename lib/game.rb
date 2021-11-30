@@ -66,7 +66,10 @@ class Game
       return if @winner
     end
 
-    if game_logic.determine_draw_king_king
+    if game_logic.determine_draw_king_king ||
+       game_logic.determine_draw_king_knight ||
+       game_logic.determine_draw_same_color_king_bishop ||
+       game_logic.determine_draw_king_bishop
       choose_winner('DRAW')
       return if @winner
     end
