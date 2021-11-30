@@ -14,11 +14,11 @@ class SpecialMoves
 
   # Castling is done with the rook and king piece. King moves two spaces towards
   # The rook being castled. The rook will be on the space the king skipped over.
-    # Rook must not have moved x
-    # King must not have moved x
-    # King is not in check x
-    # King must not move over a space that can be attacked by an enemy piece.
-    # Squares between the King and the Rook must be empty
+  # Rook must not have moved x
+  # King must not have moved x
+  # King is not in check x
+  # King must not move over a space that can be attacked by an enemy piece.
+  # Squares between the King and the Rook must be empty
 
   def able_castling(which_rook, player_king)
     player_rook = @special_board.get_rook(@player.color, which_rook)
@@ -51,6 +51,8 @@ class SpecialMoves
 
   def check_rook_first_turn?(which_rook)
     player_rook = @special_board.get_rook(@player.color, which_rook)
+    return false if player_rook.nil?
+
     return false unless player_rook.first_turn
 
     true
@@ -72,7 +74,6 @@ class SpecialMoves
   end
 
   def check_spaces_attacked?(k_pos, which_rook, enemy_moves)
-    p enemy_moves
     if which_rook == 'left'
       one_space = [k_pos[0], k_pos[1] - 1]
       two_space = [k_pos[0], k_pos[1] - 2]
@@ -80,11 +81,6 @@ class SpecialMoves
       one_space = [k_pos[0], k_pos[1] + 1]
       two_space = [k_pos[0], k_pos[1] + 2]
     end
-
-    puts "\n"
-    p one_space
-    p two_space
-
     return false if enemy_moves.include?(one_space) || enemy_moves.include?(two_space)
 
     true
@@ -100,10 +96,14 @@ class SpecialMoves
 
   def add_castling_spaces_king(which_rook, player_king)
     k_pos = player_king.current_pos
+    player_king.possible_moves.push(find_king_castling_destination(which_rook, k_pos))
+  end
+
+  def find_king_castling_destination(which_rook, k_pos)
     if which_rook == 'left'
-      player_king.possible_moves.push([[k_pos[0], k_pos[1] - 2]])
+      [[k_pos[0], k_pos[1] - 2]]
     else
-      player_king.possible_moves.push([[k_pos[0], k_pos[1] + 2]])
+      [[k_pos[0], k_pos[1] + 2]]
     end
   end
   # En passant
@@ -113,7 +113,45 @@ class SpecialMoves
   # the double stepping pawn, the third row.
   # This move must be done directly after the double step move
 
-  def check_for_en_passant
+  # Pawns should have an en_passant variable which becomes true if the pawn did
+  # a 2 square move. (The leap on the first turn)
+
+  # Pawns with a true en_passant variable are able to get eaten by pawns to the
+  # left or right of its current position
+
+  # When the en_passant variable is true and there are pawns to the left or right
+  # Then update the pawn to the left or right with the en_passant possible move
+  # The attacking pawn will move to the pawn's current rank position - 1
+
+  def find_en_passant_recip
+    @special_board.get_list_pawns(@player.color).select(&:en_passant_recip)[0]
+  end
+
+  def find_en_passant_recip_enemy
+    @special_board.get_list_pawns(@player.opponent_color).select(&:en_passant_recip)[0]
+  end
+
+  def find_en_passant_pieces
+    @special_board.get_list_pawns(@player.color).select(&:en_passant)
+  end
+
+  def adj_piece_en_passant_recip(en_passant_pawn, side)
+    pos = en_passant_pawn.current_pos
+    adj_pos = pos[1] + side
+
+    return nil unless adj_pos.between?(0, 7)
+
+    @special_board.board[pos[0]][pos[1] + side].piece
+  end
+
+  def add_en_passant_attack_move(en_passant_recip, chosen_piece)
+    position = en_passant_recip.current_pos
+    dest = en_passant_attack_move_pos(en_passant_recip, position)
+    chosen_piece&.add_possible_attack_spaces([[[dest]]])
+  end
+
+  def en_passant_attack_move_pos(en_passant_recip, position)
+    en_passant_recip.color == 'white' ? [position[0] + 1, position[1]] : [position[0] - 1, position[1]]
   end
 
   # Pawn Promotion

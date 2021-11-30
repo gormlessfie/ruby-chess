@@ -6,10 +6,10 @@ require './lib/player'
 class ComputerPlayer < Player
   attr_reader :piece, :type
 
-  def initialize
+  def initialize(color)
     @type = 'cpu'
     # CPU color is random between white and black
-    super('black')
+    super(color)
   end
 
   def player_input(valid_pieces_list)

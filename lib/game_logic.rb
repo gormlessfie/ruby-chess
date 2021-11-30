@@ -3,10 +3,11 @@
 # This checks if the board is in a state where a winner can be declared.
 # This object should be created and ran before player chooses piece to move.
 class GameLogic
+  @@previous_boards = []
   def initialize(board)
-    @chess_board = board
-    @list_of_white_pieces = @chess_board.get_list_of_pieces('white')
-    @list_of_black_pieces = @chess_board.get_list_of_pieces('black')
+    @logic_board = board
+    @list_of_white_pieces = @logic_board.get_list_of_pieces('white')
+    @list_of_black_pieces = @logic_board.get_list_of_pieces('black')
   end
 
   def king_in_check?(king)
@@ -28,10 +29,15 @@ class GameLogic
   end
 
   def determine_stalemate(valid_list, king)
+    return if king.check
+
+    return true if valid_list.empty?
+
     # A stalemate is decided when...
     # 1 King is not in check
-    # 2 No valid pieces.
-    return true if valid_list.empty? && !king.check
+    # 2 No pieces that won't cause a self-check
+    list_pieces = valid_list.map { |valid_piece| true if valid_piece.possible_moves.empty? }
+    return true if list_pieces.all?(true) && king.possible_moves.empty
 
     false
   end
@@ -50,9 +56,96 @@ class GameLogic
   # King Knight vs King | King vs King | King Bishop vs King | King Bishop same space color vs King Bishop same space color
   # Check the pieces_list of each player and see if they match any of these combinations.
   # Must check for both sides, ie King Knight vs King && King vs King Knight
+  def add_to_history
+    current_board = []
+
+    @logic_board.board.each do |row|
+      row.each do |space|
+        current_board.push([space.piece&.name, space.piece&.color])
+      end
+    end
+
+    @@previous_boards.push(current_board)
+  end
+
+  def determine_three_rep_rule
+    # If there are three occurrences of the same element, then true
+    tally = @@previous_boards.tally.map { |_k, v| v }
+
+    return true if tally.select { |occurrences| occurrences > 2 }.length.positive?
+    
+    false
+  end
+
   def determine_draw_turns(turns)
-    num_pieces = @chess_board.find_all_pieces.length
+    num_pieces = @logic_board.find_all_pieces.length
 
     false
+  end
+
+  def determine_draw_king_knight
+    determine_draw_two_pieces(King, Knight)
+  end
+
+  def determine_draw_king_bishop
+    determine_draw_two_pieces('king', 'bishop')
+  end
+
+  def determine_draw_same_color_king_bishop
+    determine_draw_two_pieces('king', 'bishop') &&
+      determine_same_space_color_bishops
+  end
+
+  def determine_same_space_color_bishops
+    # if bishops on same color, then draw
+
+    white_bishop = @list_of_white_pieces.select { |piece| piece.is_a?(Bishop) }
+    black_bishop = @list_of_black_pieces.select { |piece| piece.is_a?(Bishop) }
+
+    color_space_white_bishop = @logic_board.board[white_bishop.current_pos[0]][white_bishop.current_pos[1]]
+                                           .color
+    color_space_black_bishop = @logic_board.board[black_bishop.current_pos[0]][black_bishop.current_pos[1]]
+                                           .color
+
+    return true if color_space_white_bishop == color_space_black_bishop
+
+    false
+  end
+
+  def determine_draw_king_king
+    white_list = @list_of_white_pieces
+    black_list = @list_of_black_pieces
+    return true if only_piece_king(white_list) && only_piece_king(black_list)
+
+    false
+  end
+
+  def determine_draw_two_pieces(piece_one, piece_two)
+    white_list = @list_of_white_pieces
+    black_list = @list_of_black_pieces
+
+    if (only_two_pieces(piece_one, piece_two, white_list) && only_piece_king(black_list)) ||
+       (only_two_pieces(piece_one, piece_two, black_list) && only_piece_king(white_list))
+      return true
+    end
+
+    false
+  end
+
+  def only_piece_king(list)
+    return true if list.length == 1 && list.select { |p| p.name == 'king' }[0]
+
+    false
+  end
+
+  def only_two_pieces(piece_one, piece_two, list)
+    in_list = list.select { |p| p.name == piece_one || p.name == piece_two }
+    return true if in_list.length == 2
+
+    false
+  end
+
+  def show_history
+    @@previous_boards
   end
 end

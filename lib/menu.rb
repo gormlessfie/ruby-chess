@@ -11,6 +11,11 @@ class Menu
     selection
   end
 
+  def start_cpu_both
+    game = Game.new(ComputerPlayer.new('white'), ComputerPlayer.new('black'))
+    game.game_start
+  end
+
   private
 
   def print_menu
@@ -49,14 +54,14 @@ class Menu
 
     return false if loaded_game.nil?
 
-    game = Game.new(Player.new('black'))
+    game = Game.new(Player.new('white'), Player.new('black'))
     game.load_save_game(loaded_game)
 
     true
   end
 
-  def start_new_game(player_two = Player.new('black'))
-    game = Game.new(player_two)
+  def start_new_game(player_one = Player.new('white'), player_two = Player.new('black'))
+    game = Game.new(player_one, player_two)
     game.game_start
   end
 
@@ -67,7 +72,7 @@ class Menu
       system('clear')
       case choice
       when 1
-        computer_play? ? start_new_game(ComputerPlayer.new) : start_new_game
+        computer_play? ? start_new_game(Player.new('white'), ComputerPlayer.new('black')) : start_new_game
         break
       when 2
         break if load_menu
@@ -82,3 +87,7 @@ class Menu
     false
   end
 end
+
+m = Menu.new
+
+m.start_cpu_both
