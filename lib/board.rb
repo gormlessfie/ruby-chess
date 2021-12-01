@@ -7,6 +7,7 @@ require './lib/chess_pieces/queen'
 require './lib/chess_pieces/knight'
 require './lib/chess_pieces/rook'
 require './lib/space'
+require 'colorize'
 
 # The chess board. This is an array which has 8 arrays of Space Objects.
 class Board
@@ -58,12 +59,21 @@ class Board
     @board.each_with_index do |row, ridx|
       print "       #{ridx} "
       row.each do |space|
-        print "[#{space.piece.display_icon}]" unless space.piece.nil?
+        space.color == 'white' ? print_space_color(space, :blue) : print_space_color(space, :black)
 
-        print '[ ]' if space.piece.nil?
+        # print "[#{space.piece.display_icon}]" unless space.piece.nil?
+
+        # print '[ ]' if space.piece.nil?
       end
       puts "\n"
     end
+  end
+
+  def print_space_color(space, color)
+    # The background color is white
+    print " #{space.piece.display_icon} ".colorize(background: color) unless space.piece.nil?
+
+    print '   '.colorize(background: color) if space.piece.nil?
   end
 
   def move_piece(initial_pos, dest_pos)
