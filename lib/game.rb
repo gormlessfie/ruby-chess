@@ -766,6 +766,9 @@ class Game
       White will go first and then black. Each player must move a piece even if
       it will be detrimental. A tie will be declared when 50 turns are taken.
 
+      White player is the pieces in outline. #{"\u2654".encode('utf-8')}
+      Black player is the pieces filled in. #{"\u265A".encode('utf-8')}
+
       Input a string such as '3,4' to select a piece to move. You cannot
       switch once selected.
 
