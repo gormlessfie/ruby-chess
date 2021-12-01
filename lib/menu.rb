@@ -87,7 +87,3 @@ class Menu
     false
   end
 end
-
-m = Menu.new
-
-m.start_cpu_both
